@@ -1,0 +1,60 @@
+version: "3"
+services:
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - ${FRONTEND_PORT}:${FRONTEND_PORT}
+    container_name: mern-frontend
+    networks:
+      - ama-frontend
+    volumes:
+      -  ./frontend/src:/usr/app/src
+      -  ./frontend/public:/usr/app/public
+    depends_on:
+      - backend
+    stdin_open: true
+    tty: true
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    env_file:
+      - .env
+    ports:
+      - ${BACKEND_PORT}:${BACKEND_PORT}
+    container_name: mern-backend
+    networks:
+      - ama-backend
+      - ama-frontend
+    volumes:
+      - ./backend/src:/usr/app/src
+    links:
+      - "db:database"
+    depends_on:
+      - db
+
+  db:
+    image: mongo
+    ports:
+      - ${MONGODB_LOCAL_PORT}:${MONGODB_DOCKER_PORT}
+    container_name: mongo-db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
+      - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
+      - MONGO_INITDB_DATABASE=$MONGODB_DATABASE
+    networks:
+      - ama-backend
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  ama-frontend:
+  ama-backend:
+
+volumes:
+  mongo-data:
+    driver: local

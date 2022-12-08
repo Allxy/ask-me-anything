@@ -30,7 +30,7 @@ export class UsersController {
       });
   }
 
-  @Patch('/me'
+  @Patch('/me')
   private async patchUserMe (@CurrentUser() user: HydratedDocument<IUser>, @Body() { name }: IUser): Promise<any> {
     const updated = await UserModel.findOneAndUpdate({ _id: user.id }, { name }, { new: true }).exec();
 
