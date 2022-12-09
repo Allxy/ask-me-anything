@@ -6,7 +6,15 @@
     "frontend"
   ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "docker:build": "docker-compose -f docker-compose.yml up --force-recreate --no-start --build --remove-orphans",
+    "docker:clear": "docker-compose -f docker-compose.yml down --rmi all --volumes --remove-orphans",
+    "docker:rebuild": "npm run docker:clear && npm run docker:build",
+    "docker:start": "docker-compose -f docker-compose.yml start",
+    "docker:stop": "docker-compose -f docker-compose.yml stop",
+    "docker:restart": "docker-compose -f docker-compose.yml restart",
+    "docker:back:i" : "docker exec -it -u 0 mern-backend npm install",
+    "docker:front:i" : "docker exec -it -u 0 mern-frontend npm install"
+
   },
   "keywords": [],
   "author": "Allxy01@gmail.com (Allxy)",

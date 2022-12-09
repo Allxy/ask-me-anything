@@ -4,6 +4,7 @@ export type IRole = 'admin' | 'user' | 'moder';
 
 export interface IUser {
   name: string
+  login: string
   email: string
   role: IRole
   password: string
@@ -17,8 +18,21 @@ const userSchema = new mongoose.Schema<IUser, UserModelType>({
   name: {
     type: String,
     required: [true, 'is required'],
-    min: [2, 'must be at least 2'],
-    max: [16, 'should be no more than 16']
+    minlength: [2, 'must be at least 2'],
+    maxlength: [16, 'should be no more than 16']
+  },
+  login: {
+    type: String,
+    required: [true, 'is required'],
+    unique: true,
+    minlength: [2, 'must be at least 5'],
+    maxlength: [16, 'should be no more than 16'],
+    validate: [
+      function (v: string) {
+        return /^[a-zA-Z\d]+$/.test(v);
+      },
+      (props: { value: string }) => `${props.value} is not a valid login`
+    ]
   },
   email: {
     type: String,
@@ -28,7 +42,7 @@ const userSchema = new mongoose.Schema<IUser, UserModelType>({
       function (v: string) {
         return /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(v);
       },
-      (props: { value: string }) => `${props.value} is not a valid email!`
+      (props: { value: string }) => `${props.value} is not a valid email`
     ]
   },
   role: {

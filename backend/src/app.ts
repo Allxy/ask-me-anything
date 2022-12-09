@@ -5,7 +5,6 @@ import 'reflect-metadata';
 import * as mongoose from 'mongoose';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { IRole, UserModel } from './database/models/UserModel';
-import { idTransform } from './database/transforms';
 
 const logger = log4js.getLogger();
 logger.level = process.env.BACKEND_LOG_LEVEL ?? 'error';

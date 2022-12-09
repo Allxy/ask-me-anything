@@ -30,17 +30,17 @@ export class AuthController {
   }
 
   @Post('/signup')
-  private async getUserMe (@Body() { name, email, password }: IUser): Promise<any> {
+  private async getUserMe (@Body() { name, email, password, login }: IUser): Promise<any> {
     const find = await UserModel.findOne({ email }).exec();
 
     if (find != null) {
       throw new BadRequestError('User is already exists with this email');
     }
 
-    const User = new UserModel({ name, email: email.toLowerCase(), password, role: 'user' });
+    const User = new UserModel({ name, email: email.toLowerCase(), password, role: 'user', login });
     const validation = await User.validate();
     if (validation != null) {
-      throw new BadRequestError(validation as string);
+      throw new BadRequestError(validation);
     }
 
     User.password = await bcrypt.hash(User.password, 10);

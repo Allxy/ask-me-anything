@@ -4,7 +4,7 @@ import {
   Get,
   QueryParam,
   Authorized,
-  CurrentUser, Post, Patch, Body, BadRequestError
+  CurrentUser, Patch, Body, BadRequestError
 } from 'routing-controllers';
 import { logger } from '../utils/logger';
 import { IUser, UserModel } from '../database/models/UserModel';
@@ -31,11 +31,24 @@ export class UsersController {
   }
 
   @Patch('/me')
-  private async patchUserMe (@CurrentUser() user: HydratedDocument<IUser>, @Body() { name }: IUser): Promise<any> {
-    const updated = await UserModel.findOneAndUpdate({ _id: user.id }, { name }, { new: true }).exec();
+  private async patchUserMe (@CurrentUser() user: HydratedDocument<IUser>, @Body() { name, login }: IUser): Promise<object> {
+    if (login !== undefined && user.login !== login) {
+      const checkLogin = await UserModel.findOne({ login }).exec();
+      console.log(checkLogin);
 
-    if (updated !== undefined) {
-      return updated?.toObject({
+      if (checkLogin !== undefined && checkLogin !== null) throw new BadRequestError('login is alredy busy');
+    }
+
+    let updated;
+
+    try {
+      updated = await UserModel.findOneAndUpdate({ _id: user.id }, { name, login }, { new: true, runValidators: true }).exec();
+    } catch (e: any) {
+      throw new BadRequestError(e.message);
+    }
+
+    if (updated !== undefined && updated !== null) {
+      return await updated.toObject({
         versionKey: false,
         transform: idTransform
       });
@@ -51,6 +64,7 @@ export class UsersController {
       @QueryParam('page') page: number
   ): Promise<object> {
     logger.info('UserController:getUser');
+
     const users = await UserModel.find({})
       .limit(limit)
       .skip(limit * (page - 1))
