@@ -11,8 +11,8 @@ services:
     networks:
       - ama-frontend
     volumes:
-      -  ./frontend/src:/usr/app/src
-      -  ./frontend/public:/usr/app/public
+      - ./frontend/src:/usr/app/src
+      - ./frontend/public:/usr/app/public
     depends_on:
       - backend
     stdin_open: true
@@ -32,6 +32,7 @@ services:
       - ama-frontend
     volumes:
       - ./backend/src:/usr/app/src
+      - ./backend/package.json:./backend/package.json
     links:
       - "db:database"
     depends_on:
@@ -54,6 +55,7 @@ services:
 networks:
   ama-frontend:
   ama-backend:
+
 
 volumes:
   mongo-data:

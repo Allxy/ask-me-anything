@@ -1,0 +1,18 @@
+:root {
+  --color-bg-light: #393939;
+  --color-bg-main: #323232;
+  --color-bg-dark: #272727;
+  --color-main: #e5e5e5;
+  --color-main-dark: #c5c5c5;
+}
+
+#root {
+  min-height: 100vh;
+  width: 100%;
+  background: var(--color-bg-dark);
+}
+
+body {
+  margin: 0;
+
+}

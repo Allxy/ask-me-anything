@@ -1,0 +1,8 @@
+.error-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: max(100vh, 300px);
+  background-color: #e0e0e0;
+}

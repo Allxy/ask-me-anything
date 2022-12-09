@@ -1,0 +1,20 @@
+.header {
+  min-height: 3em;
+  background-color: var(--color-bg-main);
+  color: var(--color-main);
+  padding: 0 2em;
+  display: flex;
+  justify-content: center;
+}
+
+.header__container {
+  display: flex;
+  max-width: 55em;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.header__logo {
+  font-size: 2em;
+}
