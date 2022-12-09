@@ -1,5 +1,5 @@
-import { HydratedDocument } from 'mongoose';
-import { BadRequestError, Body, CurrentUser, Get, JsonController, NotFoundError, Param, Post } from 'routing-controllers';
+import { HydratedDocument, isValidObjectId } from 'mongoose';
+import { Authorized, BadRequestError, Body, CurrentUser, Get, JsonController, NotFoundError, Param, Post } from 'routing-controllers';
 import { idTransform } from '../database/transforms';
 import { IQuestion, QuestionModel } from '../database/models/QuestionModel';
 import { IUser, UserModel } from '../database/models/UserModel';
@@ -31,9 +31,15 @@ export class QuestionController {
     return questions.map((question) => question.toObject({ versionKey: false, transform: idTransform }));
   };
 
+  @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('/user/:owner')
-  private async getUserQuestions (@CurrentUser() user: HydratedDocument<IUser>, @Param('owner') owner: string): Promise<any> {
-    const findUser = await UserModel.findOne({ login: owner }).exec();
+  private async getUserQuestions (@Param('owner') owner: string): Promise<any> {
+    let findUser;
+    if (isValidObjectId(owner)) {
+      findUser = await UserModel.findById(owner).exec();
+    } else {
+      findUser = await UserModel.findOne({ login: owner }).exec();
+    }
 
     let questions;
 

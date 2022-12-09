@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema<IUser, UserModelType>({
     type: String,
     required: [true, 'is required'],
     unique: true,
-    minlength: [2, 'must be at least 5'],
+    minlength: [5, 'must be at least 5'],
     maxlength: [16, 'should be no more than 16'],
     validate: [
       function (v: string) {
@@ -38,6 +38,7 @@ const userSchema = new mongoose.Schema<IUser, UserModelType>({
     type: String,
     required: [true, 'is required'],
     unique: true,
+    select: false,
     validate: [
       function (v: string) {
         return /^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/.test(v);

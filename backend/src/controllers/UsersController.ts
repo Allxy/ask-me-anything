@@ -1,26 +1,17 @@
-import { Request, Response } from 'express';
 import {
   JsonController,
   Get,
   QueryParam,
   Authorized,
-  CurrentUser, Patch, Body, BadRequestError
+  CurrentUser, Patch, Body, BadRequestError, Param
 } from 'routing-controllers';
 import { logger } from '../utils/logger';
 import { IUser, UserModel } from '../database/models/UserModel';
 import { idTransform } from '../database/transforms';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, isValidObjectId } from 'mongoose';
 
 @JsonController('/users')
 export class UsersController {
-  @Get(':user')
-  private getUser (req: Request, res: Response): void {
-    logger.info(req.params.msg);
-    res.status(200).json({
-      message: req.params.msg
-    });
-  }
-
   @Get('/me')
   private async getUserMe (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
     return user.toObject(
@@ -57,7 +48,24 @@ export class UsersController {
     throw new BadRequestError('User not found');
   }
 
-  @Authorized(['user', 'admin', 'moder'])
+  @Authorized(['user', 'admin', 'moder', 'vip'])
+  @Get('/:user')
+  private async getUser (@Param('user') user: string): Promise<object> {
+    let findUser;
+    if (isValidObjectId(user)) {
+      findUser = await UserModel.findById(user).exec();
+    } else {
+      findUser = await UserModel.findOne({ login: user }).exec();
+    }
+
+    if (findUser !== undefined && findUser !== null) {
+      return await findUser.toObject({ versionKey: false, transform: idTransform });
+    }
+
+    throw new BadRequestError('User not found');
+  }
+
+  @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('')
   private async getUsers (
     @QueryParam('limit') limit: number,
