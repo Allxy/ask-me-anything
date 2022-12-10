@@ -13,7 +13,7 @@ import { idTransform } from '../database/transforms';
 export class AuthController {
   @Post('/signin')
   private async login (@Body() { email, password }: IUser, @Res() res: Response): Promise<any> {
-    const find = await UserModel.findOne({ email }).select('+password').exec();
+    const find = await UserModel.findOne({ email: email.toLowerCase() }).select('+password').exec();
 
     if (find == null) {
       throw new BadRequestError('User not found');
