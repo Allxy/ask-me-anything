@@ -1,7 +1,7 @@
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, defer, Route, RouterProvider } from 'react-router-dom';
 import AMAApi from '../AMAApi';
-import User from '../models/User';
+import User, { Role } from '../models/User';
 import { UserLayout, AuthLayout, ProtectedLayout } from './layouts';
 import { ErrorPage, Login, Register } from './pages';
 
@@ -29,12 +29,24 @@ async function signUp ({ request }: { request: Request }): Promise<boolean> {
   }
 }
 
+async function getUser (): Promise<User | null> {
+  try {
+    const responce = await AMAApi.getUserMe();
+    return responce.data;
+  } catch (err: any) {
+    if (err.code !== 'ERR_NETWORK') {
+      AMAApi.removeToken();
+    }
+    return null;
+  }
+}
+
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       path="/"
       element={<UserLayout />}
-      loader={() => defer({ userPromise: AMAApi.getUserMe() })}
+      loader={() => defer({ userPromise: getUser() })}
       errorElement={<ErrorPage />}
     >
       <Route
@@ -51,7 +63,10 @@ const router = createBrowserRouter(
           action={signUp}
         />
       </Route>
-      <Route element={<ProtectedLayout />}></Route>
+
+      <Route element={<ProtectedLayout role={Role.USER} />}>
+        <Route path='/' element={<div>231</div>}></Route>
+      </Route>
     </Route>
   ));
 

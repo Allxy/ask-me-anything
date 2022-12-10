@@ -5,13 +5,12 @@ import { useUser } from '../../contexts/UserContext';
 function Login (): JSX.Element {
   const fetcher = useFetcher();
   const { setUser } = useUser();
-  // const navigate = useNavigate();
 
   useEffect(() => {
     if (fetcher.data !== undefined && fetcher.data !== null) {
       setUser(fetcher.data);
     }
-  }, [fetcher]);
+  }, [fetcher, setUser]);
 
   return (
     <div>
