@@ -22,7 +22,7 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({ promise, classN
           children={
             (questions) =>
               questions.length > 0
-                ? questions.map((q: IQuestion) => <Question question={q} />)
+                ? questions.map((q: IQuestion) => <Question key={q._id} question={q} />)
                 : <p>No questions</p>
           }
           // TODO: Сделать нормальную ошибку
