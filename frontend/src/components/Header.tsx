@@ -23,7 +23,10 @@ function Header (): JSX.Element {
             <Link to='/sign-in'>Sign In</Link>
             <Link to='/sign-up'>Sign Up</Link>
           </>
-          : <Link to="/sign-out">Sign Out</Link>
+          : <>
+            <Link to="/profile">{user.login}</Link>
+            <Link to="/sign-out">Sign Out</Link>
+          </>
         }
         </nav>
 

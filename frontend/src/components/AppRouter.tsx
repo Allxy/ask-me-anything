@@ -5,6 +5,7 @@ import User, { Role } from '../models/User';
 import { UserLayout, AuthLayout, ProtectedLayout } from './layouts';
 import { ErrorPage, Login, Register } from './pages';
 import Feed from './pages/Feed';
+import Profile from './pages/Profile';
 import SignOut from './pages/SignOut';
 
 async function signIn ({ request }: { request: Request }): Promise<User | null> {
@@ -14,7 +15,7 @@ async function signIn ({ request }: { request: Request }): Promise<User | null> 
     const responce = await AMAApi.signIn(data);
     AMAApi.setToken(responce.data.token);
     const user = await AMAApi.getUserMe();
-    return user.data;
+    return user;
   } catch (error) {
     return null;
   }
@@ -31,23 +32,11 @@ async function signUp ({ request }: { request: Request }): Promise<boolean> {
   }
 }
 
-async function getUser (): Promise<User | null> {
-  try {
-    const responce = await AMAApi.getUserMe();
-    return responce.data;
-  } catch (err: any) {
-    if (err.code !== 'ERR_NETWORK') {
-      AMAApi.removeToken();
-    }
-    return null;
-  }
-}
-
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       element={<UserLayout />}
-      loader={() => defer({ userPromise: getUser() })}
+      loader={() => defer({ userPromise: AMAApi.getUserMe() })}
       errorElement={<ErrorPage />}
     >
       <Route
@@ -67,6 +56,13 @@ const router = createBrowserRouter(
 
       <Route element={<ProtectedLayout role={Role.USER} />}>
         <Route path='/' element={<Feed />}></Route>
+        <Route
+          path='/profile'
+          element={<Profile />}
+          loader={() => {
+            return defer({ questionsPromise: AMAApi.getQuestionsForMe() });
+          }}
+        />
       </Route>
 
       <Route

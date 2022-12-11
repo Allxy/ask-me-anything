@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { Question } from './models/Question';
 import User from './models/User';
 
 export class AMAApi {
@@ -41,8 +42,22 @@ export class AMAApi {
     return await this.axios.post('/signup', data);
   }
 
-  public async getUserMe (): Promise<AxiosResponse<User>> {
-    return await this.axios.get('/users/me');
+  public async getUserMe (): Promise<User | null> {
+    try {
+      const responce = await this.axios.get('/users/me');
+      return responce.data;
+    } catch (err: any) {
+      if (err.code !== 'ERR_NETWORK') {
+        this.removeToken();
+        return null;
+      }
+      throw new Error('Api not responding!');
+    }
+  }
+
+  public async getQuestionsForMe (): Promise<Question[]> {
+    const responce = await this.axios.get('/questions/me');
+    return responce.data;
   }
 }
 

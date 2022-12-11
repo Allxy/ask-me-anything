@@ -1,15 +1,15 @@
-import { AxiosResponse } from 'axios';
 import { memo, Suspense } from 'react';
-import { Await, Outlet, useLoaderData } from 'react-router-dom';
+import { Await, Outlet } from 'react-router-dom';
 import { UserContextProvider } from '../../contexts/UserContext';
-import User from '../../models/User';
 import Header from '../Header';
+import { useLoaderUserData } from '../hooks/LoaderDataHooks';
+import Loader from '../ui/Loader';
 
 const UserLayout: React.FC = () => {
-  const { userPromise } = useLoaderData() as { userPromise: Promise<AxiosResponse<User, any>> };
+  const { userPromise } = useLoaderUserData();
 
   return (
-    <Suspense fallback={<div>LOADING</div>}>
+    <Suspense fallback={<Loader />}>
       <Await
         resolve={userPromise}
         children={(user) => {
