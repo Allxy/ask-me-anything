@@ -35,6 +35,7 @@ async function start (): Promise<void> {
             throw new ForbiddenError('No access to this resource');
           }
 
+          action.request.payload_data = payload;
           return true;
         } catch (e: any) {
           throw new ForbiddenError('Bad token');
@@ -43,23 +44,27 @@ async function start (): Promise<void> {
       throw new ForbiddenError('No access to this resource');
     },
     currentUserChecker: async (action: Action) => {
-      if (action.request.headers.authorization !== undefined) {
+      let payload;
+
+      if (action.request.payload_data !== undefined) {
+        payload = action.request.payload_data;
+      } else if (action.request.headers.authorization !== undefined) {
         try {
-          const payload = jwt.verify(action.request.headers.authorization.split(' ')[1],
+          payload = jwt.verify(action.request.headers.authorization.split(' ')[1],
             process.env.BACKEND_JWT_SECRET ?? 'secret', { complete: true }).payload as JwtPayload;
-          const user = await UserModel.findById(payload.id).select('+email').exec();
-
-          if (user !== undefined) {
-            return user;
-          }
-
-          throw new ForbiddenError('User not found or bad token');
         } catch (e: any) {
           throw new ForbiddenError('Bad token');
         }
+      } else {
+        throw new ForbiddenError('No token');
       }
 
-      throw new ForbiddenError('Bad token');
+      const user = await UserModel.findById(payload.id).select('+email').exec();
+
+      if (user !== undefined && user !== null) {
+        return user;
+      }
+      throw new ForbiddenError('User not found or bad token');
     }
   });
   app.listen(port, () => logger.info(`Running on port ${port}`));
