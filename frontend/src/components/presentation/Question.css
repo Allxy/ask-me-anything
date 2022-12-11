@@ -1,0 +1,10 @@
+.question {
+  border: solid 1px;
+  border-radius: 1em;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+.question:last-child {
+  margin-bottom: 0;
+}

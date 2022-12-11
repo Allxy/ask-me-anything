@@ -1,6 +1,6 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { Question } from './models/Question';
-import User from './models/User';
+import { IQuestion } from './models/Question';
+import { IUser } from './models/User';
 
 export class AMAApi {
   private readonly axios: AxiosInstance;
@@ -38,11 +38,11 @@ export class AMAApi {
     return await this.axios.post('/signin', data);
   }
 
-  public async signUp (data: any): Promise<AxiosResponse<User>> {
+  public async signUp (data: any): Promise<AxiosResponse<IUser>> {
     return await this.axios.post('/signup', data);
   }
 
-  public async getUserMe (): Promise<User | null> {
+  public async getUserMe (): Promise<IUser | null> {
     try {
       const responce = await this.axios.get('/users/me');
       return responce.data;
@@ -55,8 +55,13 @@ export class AMAApi {
     }
   }
 
-  public async getQuestionsForMe (): Promise<Question[]> {
+  public async getQuestionsForMe (): Promise<IQuestion[]> {
     const responce = await this.axios.get('/questions/me');
+    return responce.data;
+  }
+
+  public async getMyQuestions (): Promise<IQuestion[]> {
+    const responce = await this.axios.get('/questions/my');
     return responce.data;
   }
 }

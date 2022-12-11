@@ -1,0 +1,11 @@
+.profile {
+  padding: 1em;
+}
+
+.profile__section {
+  margin-bottom: 1em;
+}
+
+.profile__section:last-child {
+  margin-bottom: 0;
+}

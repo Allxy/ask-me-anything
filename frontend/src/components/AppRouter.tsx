@@ -1,14 +1,14 @@
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, defer, Route, RouterProvider } from 'react-router-dom';
 import AMAApi from '../AMAApi';
-import User, { Role } from '../models/User';
+import { ERole, IUser } from '../models/User';
 import { UserLayout, AuthLayout, ProtectedLayout } from './layouts';
 import { ErrorPage, Login, Register } from './pages';
 import Feed from './pages/Feed';
 import Profile from './pages/Profile';
 import SignOut from './pages/SignOut';
 
-async function signIn ({ request }: { request: Request }): Promise<User | null> {
+async function signIn ({ request }: { request: Request }): Promise<IUser | null> {
   const formData = await request.formData();
   try {
     const data = AMAApi.getDataFromForm(formData);
@@ -54,13 +54,16 @@ const router = createBrowserRouter(
         />
       </Route>
 
-      <Route element={<ProtectedLayout role={Role.USER} />}>
+      <Route element={<ProtectedLayout role={ERole.USER} />}>
         <Route path='/' element={<Feed />}></Route>
         <Route
           path='/profile'
           element={<Profile />}
           loader={() => {
-            return defer({ questionsPromise: AMAApi.getQuestionsForMe() });
+            return defer({
+              meQuestPromise: AMAApi.getQuestionsForMe(),
+              myQuestPromise: AMAApi.getMyQuestions()
+            });
           }}
         />
       </Route>

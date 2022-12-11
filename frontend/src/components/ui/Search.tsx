@@ -1,5 +1,5 @@
 import './Search.css';
-import classname from 'classnames';
+import classNames from 'classnames';
 
 interface SearchProps {
   className?: string
@@ -9,7 +9,7 @@ function Search (props: SearchProps): JSX.Element {
   return (
     <div className='search'>
       <span className='search__icon' />
-      <input className={classname('search__input', props.className)} />
+      <input className={classNames('search__input', props.className)} />
     </div>
   );
 }

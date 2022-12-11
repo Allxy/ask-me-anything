@@ -1,18 +1,14 @@
-import * as React from 'react';
-import { Await } from 'react-router-dom';
-import { Question } from '../../models/Question';
-import { useLoaderQuestionsData } from '../hooks/LoaderDataHooks';
+import { IQuestion } from '../../models/Question';
+import QuestionsContainer from '../containers/QuestionsContainer';
+import { useLoaderTypedData } from '../hooks/useLoaderTypedData';
+import './Profile.css';
 
 const Profile: React.FC = () => {
-  const { questionsPromise } = useLoaderQuestionsData();
+  const { meQuestPromise, myQuestPromise } = useLoaderTypedData<Promise<IQuestion[]>>();
 
-  return <div>
-    <Await
-      resolve={questionsPromise}
-      children={(questions) => questions.map((q: Question) => <div>{q.body}</div>)
-      }
-      errorElement={<div>Questions could not loaded</div>}
-    />
+  return <div className='profile'>
+    <QuestionsContainer title="Questions for you" className='profile__section' promise={meQuestPromise} />
+    <QuestionsContainer title="Your questions" className='profile__section' promise={myQuestPromise} />
   </div>;
 };
 

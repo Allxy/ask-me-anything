@@ -1,10 +1,9 @@
-import User from './User';
-
-export interface Question {
+import { IUser } from './User';
+export interface IQuestion {
   _id: string
   title: string
   body: string
   anonim: boolean
-  owner?: User
-  author?: User
+  owner?: IUser
+  author?: IUser
 }

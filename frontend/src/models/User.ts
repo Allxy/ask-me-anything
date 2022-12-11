@@ -1,16 +1,14 @@
-interface User {
+export interface IUser {
   _id: string
   name: string
   email?: string
   login: string
-  role: Role
+  role: ERole
 };
 
-export enum Role {
+export enum ERole {
   USER = 'user',
   ADMIN = 'admin',
   MODER = 'moder',
   VIP = 'vip'
 }
-
-export default User;
