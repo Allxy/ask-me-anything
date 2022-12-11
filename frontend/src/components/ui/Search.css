@@ -15,7 +15,7 @@
 }
 
 .search__icon {
-  background-image: url(../images/search.svg);
+  background-image: url(../../images/search.svg);
   width: 1em;
   height: 1em;
   background-size: cover;

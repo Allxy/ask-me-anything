@@ -1,7 +1,6 @@
 import { memo } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
-import Header from '../Header';
 
 function AuthLayout (): JSX.Element {
   const { user } = useUser();
@@ -11,7 +10,6 @@ function AuthLayout (): JSX.Element {
   }
 
   return (<>
-  <Header />
   <Outlet />
   </>);
 }

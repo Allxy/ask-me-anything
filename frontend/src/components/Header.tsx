@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import './Header.css';
-import Search from './Search';
+import Search from './ui/Search';
 
 function Header (): JSX.Element {
   const { user } = useUser();
@@ -10,17 +10,23 @@ function Header (): JSX.Element {
     <header className='header'>
       <div className='header__container'>
         <div className='header__logo'>
-          <Link to="/">
+          <Link to='/'>
             Ask Me Anything
           </Link>
         </div>
 
+        {(user != null) && <Search className='header__search' />}
+
         <nav className='header__nav'>
-          <Link to="/sign-in">Вход</Link>
-          <Link to="/sign-up">Регистрация</Link>
+        {(user === null)
+          ? <>
+            <Link to='/sign-in'>Sign In</Link>
+            <Link to='/sign-up'>Sign Up</Link>
+          </>
+          : <Link to="/sign-out">Sign Out</Link>
+        }
         </nav>
-        {user?.name}
-        <Search className="header__search" />
+
       </div>
     </header>
   );

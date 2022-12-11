@@ -4,6 +4,8 @@ import AMAApi from '../AMAApi';
 import User, { Role } from '../models/User';
 import { UserLayout, AuthLayout, ProtectedLayout } from './layouts';
 import { ErrorPage, Login, Register } from './pages';
+import Feed from './pages/Feed';
+import SignOut from './pages/SignOut';
 
 async function signIn ({ request }: { request: Request }): Promise<User | null> {
   const formData = await request.formData();
@@ -44,7 +46,6 @@ async function getUser (): Promise<User | null> {
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
-      path="/"
       element={<UserLayout />}
       loader={() => defer({ userPromise: getUser() })}
       errorElement={<ErrorPage />}
@@ -65,8 +66,17 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<ProtectedLayout role={Role.USER} />}>
-        <Route path='/' element={<div>231</div>}></Route>
+        <Route path='/' element={<Feed />}></Route>
       </Route>
+
+      <Route
+          path='sign-out'
+          element={<SignOut />}
+          loader={() => {
+            AMAApi.removeToken();
+            return null;
+          }}
+      />
     </Route>
   ));
 
