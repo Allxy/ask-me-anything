@@ -26,4 +26,4 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ role }) => {
   );
 };
 
-export default ProtectedLayout;
+export default React.memo(ProtectedLayout);

@@ -1,7 +1,7 @@
 import classNames from 'classnames';
 import { ReactNode } from 'react';
 import Logo from '../ui/Logo';
-import './AuthWrapper.css';
+import './AuthContainer.css';
 
 interface AuthContainerProps {
   children: ReactNode
@@ -9,7 +9,7 @@ interface AuthContainerProps {
   className?: string
 }
 
-const AuthWrapper: React.FC<AuthContainerProps> = ({ children, title, className }) => {
+const AuthContainer: React.FC<AuthContainerProps> = ({ children, title, className }) => {
   return (
     <div className={classNames('auth', className)}>
       <Logo link="/sign-in" />
@@ -19,4 +19,4 @@ const AuthWrapper: React.FC<AuthContainerProps> = ({ children, title, className 
   );
 };
 
-export default AuthWrapper;
+export default AuthContainer;

@@ -1,7 +1,7 @@
 import { useRouteError } from 'react-router-dom';
 import './ErrorPage.css';
 
-function ErrorPage (): JSX.Element {
+const ErrorPage: React.FC = () => {
   const error = useRouteError() as { message: string, statusText: string };
 
   return (
@@ -13,6 +13,6 @@ function ErrorPage (): JSX.Element {
       </p>
     </div>
   );
-}
+};
 
 export default ErrorPage;

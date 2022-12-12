@@ -3,10 +3,8 @@ import { createBrowserRouter, createRoutesFromElements, defer, Route, RouterProv
 import AMAApi from '../AMAApi';
 import { ERole, IUser } from '../models/User';
 import { UserLayout, AuthLayout, ProtectedLayout } from './layouts';
-import { ErrorPage, Login, Register } from './pages';
-import Feed from './pages/Feed';
-import Profile from './pages/Profile';
-import SignOut from './pages/SignOut';
+import { ErrorPage, LoginPage, RegisterPage, FeedPage, ProfilePage } from './pages';
+import SignOut from './pages/SignOutPage';
 
 async function signIn ({ request }: { request: Request }): Promise<IUser | null> {
   try {
@@ -42,21 +40,21 @@ const router = createBrowserRouter(
       >
         <Route
           path='/sign-in'
-          element={<Login />}
+          element={<LoginPage />}
           action={signIn}
         />
         <Route
           path='/sign-up'
-          element={<Register />}
+          element={<RegisterPage />}
           action={signUp}
         />
       </Route>
 
       <Route element={<ProtectedLayout role={ERole.USER} />}>
-        <Route path='/' element={<Feed />}></Route>
+        <Route path='/' element={<FeedPage />}></Route>
         <Route
           path='/profile'
-          element={<Profile />}
+          element={<ProfilePage />}
           loader={() => {
             return defer({
               meQuestPromise: AMAApi.getQuestionsForMe(),

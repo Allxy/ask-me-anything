@@ -1,9 +1,9 @@
 import { IQuestion } from '../../models/Question';
 import QuestionsContainer from '../containers/QuestionsContainer';
 import { useLoaderTypedData } from '../hooks/useLoaderTypedData';
-import './Profile.css';
+import './ProfilePage.css';
 
-const Profile: React.FC = () => {
+const ProfilePage: React.FC = () => {
   const { meQuestPromise, myQuestPromise } = useLoaderTypedData<Promise<IQuestion[]>>();
 
   return <div className='profile'>
@@ -12,4 +12,4 @@ const Profile: React.FC = () => {
   </div>;
 };
 
-export default Profile;
+export default ProfilePage;

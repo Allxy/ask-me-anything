@@ -1,3 +1,5 @@
 export { default as ErrorPage } from './ErrorPage';
-export { default as Register } from './Reginster';
-export { default as Login } from './Login';
+export { default as RegisterPage } from './ReginsterPage';
+export { default as LoginPage } from './LoginPage';
+export { default as ProfilePage } from './ProfilePage';
+export { default as FeedPage } from './FeedPage';

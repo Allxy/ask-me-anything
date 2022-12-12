@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
-import './Header.css';
 import Logo from './ui/Logo';
 import Search from './ui/Search';
+import './Header.css';
 
 function Header (): JSX.Element {
   const { user } = useUser();
