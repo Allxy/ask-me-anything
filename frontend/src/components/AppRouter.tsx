@@ -51,6 +51,8 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<ProtectedLayout role={ERole.USER} />}>
+        <Route path='/search' loader={async ({ request }) => await AMAApi.getUsers(new URL(request.url).searchParams)
+        } />
         <Route path='/' element={<FeedPage />}></Route>
         <Route
           path='/profile'

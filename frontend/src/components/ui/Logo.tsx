@@ -11,7 +11,7 @@ interface LogoProps {
 const Logo: React.FC<LogoProps> = ({ className, link }) => {
   return (
     <Link to={link} className={classNames(className, 'logo')}>
-      Ask Me Anythign
+      Ask Me Anything
     </Link>
   );
 };

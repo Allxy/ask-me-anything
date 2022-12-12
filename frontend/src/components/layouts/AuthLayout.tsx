@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext';
+import useUser from '../hooks/useUser';
 
 function AuthLayout (): JSX.Element {
   const { user } = useUser();

@@ -1,4 +1,5 @@
 import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import { URLSearchParams } from 'url';
 import { IQuestion } from './models/Question';
 import { IUser } from './models/User';
 
@@ -49,6 +50,15 @@ export class AMAApi {
         return null;
       }
       throw new Error('Api not responding!');
+    }
+  }
+
+  public async getUsers (params: URLSearchParams): Promise<IUser[] | null> {
+    try {
+      const responce = await this.axios.get('/users', { params });
+      return responce.data;
+    } catch (err: any) {
+      return null;
     }
   }
 

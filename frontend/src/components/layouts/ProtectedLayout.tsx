@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext';
 import Header from '../Header';
+import useUser from '../hooks/useUser';
 
 interface ProtectedLayoutProps {
   role: string

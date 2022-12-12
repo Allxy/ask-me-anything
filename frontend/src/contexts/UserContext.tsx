@@ -1,7 +1,7 @@
 import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
 import { IUser } from '../models/User';
 
-interface UserContextType {
+export interface UserContextType {
   user: IUser | null
   setUser: Dispatch<SetStateAction<IUser | null>>
 };
@@ -25,7 +25,5 @@ export const UserContextProvider: React.FC<UserContextProviderProps> = ({ childr
     </UserContext.Provider>
   );
 };
-
-export const useUser = (): UserContextType => useContext(UserContext);
 
 export default UserContext;

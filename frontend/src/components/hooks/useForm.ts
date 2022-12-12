@@ -9,7 +9,7 @@ interface UseFormProps<T> {
   setCustomError: (key: keyof T, value: string | undefined) => void
 }
 
-export const useForm = <T>(initialValues: T): UseFormProps<T> => {
+const useForm = <T>(initialValues: T): UseFormProps<T> => {
   const [values, setValues] = useState(initialValues);
   const [errors, setErrors] = useState<{ [K in keyof T]?: string | undefined }>({});
   const [isValid, setValid] = useState(false);
@@ -37,3 +37,5 @@ export const useForm = <T>(initialValues: T): UseFormProps<T> => {
 
   return { values, errors, isValid, onChange, resetForm, setCustomError };
 };
+
+export default useForm;

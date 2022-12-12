@@ -25,7 +25,6 @@ export class UsersController {
   private async patchUserMe (@CurrentUser() user: HydratedDocument<IUser>, @Body() { name, login }: IUser): Promise<object> {
     if (login !== undefined && user.login !== login) {
       const checkLogin = await UserModel.findOne({ login }).exec();
-      console.log(checkLogin);
 
       if (checkLogin !== undefined && checkLogin !== null) throw new BadRequestError('login is alredy busy');
     }
@@ -69,11 +68,12 @@ export class UsersController {
   @Get('')
   private async getUsers (
     @QueryParam('limit') limit: number,
-      @QueryParam('page') page: number
+      @QueryParam('page') page: number,
+      @QueryParam('login') login: string
   ): Promise<object> {
-    logger.info('UserController:getUser');
+    logger.info('UserController:getUsers');
 
-    const users = await UserModel.find({})
+    const users = await UserModel.find({ login: { $regex: login } })
       .limit(limit)
       .skip(limit * (page - 1))
       .exec();

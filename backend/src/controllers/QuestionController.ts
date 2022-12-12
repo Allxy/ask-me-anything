@@ -8,8 +8,6 @@ import { IUser, UserModel } from '../database/models/UserModel';
 export class QuestionController {
   @Get('/me')
   private async getMeQuestions (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
-    console.log(user);
-
     const questions = await QuestionModel.find({ owner: user.id }).populate('author').exec();
 
     return questions

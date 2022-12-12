@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
-import { useFetcher, Link } from 'react-router-dom';
-import { useUser } from '../../contexts/UserContext';
+import { Link, useFetcher } from 'react-router-dom';
 import AuthContainer from '../containers/AuthContainer';
 import FormWithContent from '../hoc/FormWithContent';
-import { useForm } from '../hooks/useForm';
-import Button from '../ui/Button';
+import useForm from '../hooks/useForm';
+import useUser from '../hooks/useUser';
 import InputWithError from '../ui/InputWithError';
 
 const initialValues = {
@@ -15,7 +14,7 @@ const initialValues = {
 const LoginPage: React.FC = () => {
   const fetcher = useFetcher();
   const { setUser } = useUser();
-  const { values, errors, onChange } = useForm(initialValues);
+  const { values, errors, isValid, onChange } = useForm(initialValues);
 
   useEffect(() => {
     if (fetcher?.data !== undefined && fetcher.data !== null) {
@@ -30,6 +29,8 @@ const LoginPage: React.FC = () => {
         method='post'
         action='/sign-in'
         form={fetcher.Form}
+        buttonText="Sign In"
+        isValid={isValid}
       >
         {Object.keys(values).map((key) =>
           <InputWithError
@@ -43,7 +44,6 @@ const LoginPage: React.FC = () => {
             onChange={onChange}
           />
         )}
-        <Button type="submit">Sign In</Button>
       </FormWithContent>
       <Link className='auth__link' to='/sign-up'>You have no account? Sign Up!</Link>
     </AuthContainer>
