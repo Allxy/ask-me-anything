@@ -1,11 +1,11 @@
 import { useEffect } from 'react';
-import { useFetcher } from 'react-router-dom';
+import { useFetcher, Link } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
 import FormWithContent from '../hoc/FormWithContent';
 import { useForm } from '../hooks/useForm';
 import Button from '../ui/Button';
 import InputWithError from '../ui/InputWithError';
-import './Login.css';
+import AuthWrapper from '../presentation/AuthWrapper';
 
 const initialValues = {
   email: '',
@@ -24,11 +24,9 @@ const Login: React.FC = () => {
   }, [fetcher, setUser]);
 
   return (
-    <div className='login'>
-      <h1>Sign In</h1>
-
+    <AuthWrapper title="Sign In">
       <FormWithContent
-        className="login__form"
+        className="auth__form"
         method='post'
         action='/sign-in'
         form={fetcher.Form}
@@ -47,7 +45,8 @@ const Login: React.FC = () => {
         )}
         <Button type="submit">Sign In</Button>
       </FormWithContent>
-    </div>
+      <Link className='auth__link' to='/sign-up'>You have no account? Sign Up!</Link>
+    </AuthWrapper>
   );
 };
 

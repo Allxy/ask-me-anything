@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
-import { useFetcher } from 'react-router-dom';
+import { Link, useFetcher } from 'react-router-dom';
 import FormWithContent from '../hoc/FormWithContent';
 import { useForm } from '../hooks/useForm';
+import AuthWrapper from '../presentation/AuthWrapper';
 import Button from '../ui/Button';
 import InputWithError from '../ui/InputWithError';
-import './Register.css';
 
 const initialValues = {
   email: '',
@@ -46,11 +46,9 @@ function Register (): JSX.Element {
   }, [values, errors, setCustomError]);
 
   return (
-    <div className='register'>
-      <h1>Sign Up</h1>
-
+    <AuthWrapper title="Sign Up">
       <FormWithContent
-        className='register__form'
+        className='auth__form'
         method="post"
         action="/sign-up"
         form={fetcher.Form}
@@ -70,7 +68,8 @@ function Register (): JSX.Element {
         )}
         <Button type="submit">Sign Up</Button>
       </FormWithContent>
-    </div>
+      <Link className='auth__link' to="/sign-in">You have no account? Sign Up!</Link>
+    </AuthWrapper>
   );
 }
 

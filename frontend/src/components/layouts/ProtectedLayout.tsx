@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useUser } from '../../contexts/UserContext';
+import Header from '../Header';
 
 interface ProtectedLayoutProps {
   role: string
@@ -19,6 +20,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ role }) => {
 
   return (
     <>
+      <Header />
       <Outlet />
     </>
   );
