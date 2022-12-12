@@ -1,4 +1,4 @@
-.login {
+.register {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6,6 +6,6 @@
   flex: 1;
 }
 
-.login__form {
+.register__form {
   width: 40ch;
 }

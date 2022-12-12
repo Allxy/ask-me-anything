@@ -1,0 +1,22 @@
+input {
+  background-color: transparent;
+  border: none;
+  border-bottom: 2px solid var(--color-text-dark);
+  color: var(--color-text-main);
+  outline: none;
+  font-size: 1em;
+  margin-bottom: 0.3em;
+}
+
+.input_error {
+  border-color: var(--color-error);
+}
+
+.input-error {
+  display: block;
+  color: var(--color-error);
+  font-size: 0.75em;
+  line-height: 1.2em;
+  min-height: 2.4em;
+  margin-bottom: 0.3em;
+}

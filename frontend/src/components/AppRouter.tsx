@@ -9,9 +9,8 @@ import Profile from './pages/Profile';
 import SignOut from './pages/SignOut';
 
 async function signIn ({ request }: { request: Request }): Promise<IUser | null> {
-  const formData = await request.formData();
   try {
-    const data = AMAApi.getDataFromForm(formData);
+    const data = await AMAApi.getDataFromFromRequest(request);
     const responce = await AMAApi.signIn(data);
     AMAApi.setToken(responce.data.token);
     const user = await AMAApi.getUserMe();
@@ -22,9 +21,8 @@ async function signIn ({ request }: { request: Request }): Promise<IUser | null>
 }
 
 async function signUp ({ request }: { request: Request }): Promise<boolean> {
-  const formData = await request.formData();
   try {
-    const data = AMAApi.getDataFromForm(formData);
+    const data = await AMAApi.getDataFromFromRequest(request);
     await AMAApi.signUp(data);
     return true;
   } catch (error) {
@@ -43,12 +41,12 @@ const router = createBrowserRouter(
         element={<AuthLayout />}
       >
         <Route
-          path='sign-in'
+          path='/sign-in'
           element={<Login />}
           action={signIn}
         />
         <Route
-          path='sign-up'
+          path='/sign-up'
           element={<Register />}
           action={signUp}
         />

@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import './Header.css';
+import Logo from './ui/Logo';
 import Search from './ui/Search';
 
 function Header (): JSX.Element {
@@ -9,11 +10,8 @@ function Header (): JSX.Element {
   return (
     <header className='header'>
       <div className='header__container'>
-        <div className='header__logo'>
-          <Link to='/'>
-            Ask Me Anything
-          </Link>
-        </div>
+
+        <Logo link="/" className='header__logo' />
 
         {(user != null) && <Search className='header__search' />}
 

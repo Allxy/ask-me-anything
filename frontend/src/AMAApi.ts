@@ -26,12 +26,9 @@ export class AMAApi {
     localStorage.removeItem(this.tokenKey);
   }
 
-  public getDataFromForm (formData: FormData): object {
-    const data: any = {};
-    formData.forEach((element, key) => {
-      data[key] = element;
-    });
-    return data;
+  public async getDataFromFromRequest (request: Request): Promise<object> {
+    const data = await request.formData();
+    return Object.fromEntries(data);
   }
 
   public async signIn (data: any): Promise<AxiosResponse<{ token: string }>> {

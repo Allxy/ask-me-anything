@@ -1,20 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap');
+
 :root {
-  --color-bg-light: #393939;
-  --color-bg-main: #323232;
-  --color-bg-dark: #272727;
-  --color-main: #e5e5e5;
-  --color-main-dark: #c5c5c5;
+  --color-bg-light: #292929;
+  --color-bg-main: #222222;
+  --color-bg-dark: #141414;
+  --color-text-light:#e1e3e6;
+  --color-text-main: #e5e5e5;
+  --color-text-dark: #828282;
+  --color-second-light: #71aaeb;
+  --color-second-main: #71aaeb;
+  --color-second-dark: #07f;
+  --color-error: #ff2f2f;
 }
 
 #root {
   min-height: 100vh;
   width: 100%;
   background: var(--color-bg-dark);
-  color: var(--color-main);
+  color: var(--color-text-light);
   display: flex;
   flex-direction: column;
 }
 
 body {
   margin: 0;
+  font-family: Rubik;
 }
