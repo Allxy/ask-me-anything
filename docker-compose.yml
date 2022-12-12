@@ -32,7 +32,7 @@ services:
       - ama-frontend
     volumes:
       - ./backend/src:/usr/app/src
-      - ./backend/package.json:./backend/package.json
+      - ./backend/package.json:/usr/app/package.json
     links:
       - "db:database"
     depends_on:

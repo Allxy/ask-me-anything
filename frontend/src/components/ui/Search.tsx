@@ -1,15 +1,26 @@
-import './Search.css';
 import classNames from 'classnames';
+import { useRef } from 'react';
+import './Search.css';
 
 interface SearchProps {
   className?: string
 }
 
 function Search (props: SearchProps): JSX.Element {
+  const inputRef = useRef <HTMLInputElement>(null);
+
+  function handleSearchClick (): void {
+    inputRef.current?.focus();
+  }
+
   return (
-    <div className='search'>
-      <span className='search__icon' />
-      <input className={classNames('search__input', props.className)} />
+    <div className={classNames('search', props.className)}>
+      <span onClick={handleSearchClick} className='search__icon' />
+      <input
+        ref={inputRef}
+        className='search__input'
+        onBlur={() => (inputRef.current != null) && (inputRef.current.value = '')}
+      />
     </div>
   );
 }
