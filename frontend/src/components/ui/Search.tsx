@@ -6,14 +6,14 @@ import './Search.css';
 
 interface SearchProps {
   className?: string
-  openedClassName?: string
-  result: IUser[]
+  result?: IUser[]
+  error?: string
   value: string
   isLoading: boolean
   onChange: (value: string) => void
 }
 
-function Search ({ className, openedClassName, isLoading, value, onChange, result }: SearchProps): JSX.Element {
+function Search ({ className, isLoading, value, onChange, error, result }: SearchProps): JSX.Element {
   const inputRef = useRef <HTMLInputElement>(null);
 
   function handleSearchClick (): void {
@@ -21,7 +21,7 @@ function Search ({ className, openedClassName, isLoading, value, onChange, resul
   }
 
   const showStatus = value.length > 0;
-  const showResult = result !== null && (result.length > 0);
+  const showResult = result !== undefined && (result.length > 0);
 
   return (
     <div className={classNames('search',
@@ -50,7 +50,7 @@ function Search ({ className, openedClassName, isLoading, value, onChange, resul
             </Link>
         ))}
 
-        {!showResult && !isLoading && <p style={{ color: 'black', margin: 0 }}>No Results</p>}
+        {!showResult && !isLoading && <p style={{ color: 'black', margin: 0 }}>No Results {error}</p>}
         {isLoading && <p style={{ color: 'black', margin: 0 }}>Loading...</p>}
       </div>
     </div>

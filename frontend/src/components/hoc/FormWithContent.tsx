@@ -1,10 +1,11 @@
 import classNames from 'classnames';
-import { FormMethod, FormProps, useFetchers } from 'react-router-dom';
+import { FetcherWithComponents, FormMethod } from 'react-router-dom';
 import Button from '../ui/Button';
+import Spinner from '../ui/Spinner';
 import './FormWithContent.css';
 
 interface AuthProps {
-  form: React.FC<FormProps>
+  fetcher: FetcherWithComponents<any>
   action: string
   method?: FormMethod
   children: React.ReactNode
@@ -15,20 +16,21 @@ interface AuthProps {
 
 const FormWithContent: React.FC<AuthProps> = (
   {
-    form: Form,
+    fetcher,
     children,
     className,
     buttonText,
     isValid,
     ...restProps
   }) => {
-  const fetchers = useFetchers();
-
   return (
-    <Form noValidate className={classNames(className, 'form')} {...restProps}>
+    <fetcher.Form noValidate className={classNames(className, 'form')} {...restProps}>
       {children}
-      <Button disabled={!isValid || fetchers.length > 0} type="submit">{buttonText}</Button>
-    </Form>
+      <p className='form__error'>{Boolean(fetcher.data?.error) && fetcher.data?.error.message} </p>
+      <Button disabled={!isValid || fetcher.state !== 'idle'} type="submit">
+        {fetcher.state === 'idle' ? buttonText : <Spinner className="form__spinner" />}
+      </Button>
+    </fetcher.Form>
   );
 };
 

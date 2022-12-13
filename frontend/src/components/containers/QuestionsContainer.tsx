@@ -5,9 +5,10 @@ import Question from '../presentation/Question';
 import Loader from '../ui/Loader';
 import classNames from 'classnames';
 import './QuestionsContainer.css';
+import { AsyncData } from '../../models/AsyncData';
 
 interface QuestionsContainerProps {
-  promise: Promise<IQuestion[]>
+  promise: Promise<AsyncData<IQuestion[]>>
   className: string
   title?: string
 }
@@ -16,13 +17,13 @@ const QuestionsContainer: React.FC<QuestionsContainerProps> = ({ promise, classN
   return (
     <section className={classNames('questions', className)}>
       { Boolean(title) && <h2>{title}</h2>}
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={<Loader className="questions__loader" />}>
         <Await
           resolve={promise}
           children={
-            (questions) =>
-              questions.length > 0
-                ? questions.map((q: IQuestion) => <Question key={q._id} question={q} />)
+            (data) =>
+              data.payload.length > 0
+                ? data.payload.map((q: IQuestion) => <Question key={q._id} question={q} />)
                 : <p>No questions</p>
           }
           // TODO: Сделать нормальную ошибку

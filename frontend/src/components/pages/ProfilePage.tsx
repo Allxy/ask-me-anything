@@ -1,3 +1,4 @@
+import { AsyncData } from '../../models/AsyncData';
 import { IQuestion } from '../../models/Question';
 import QuestionsContainer from '../containers/QuestionsContainer';
 import { useLoaderTypedData } from '../hooks/useLoaderTypedData';
@@ -5,7 +6,7 @@ import Avatar from '../ui/Avatar';
 import './ProfilePage.css';
 
 const ProfilePage: React.FC = () => {
-  const { meQuestPromise, myQuestPromise } = useLoaderTypedData<Promise<IQuestion[]>>();
+  const { meQuestPromise, myQuestPromise } = useLoaderTypedData<Promise<AsyncData<IQuestion[]>>>();
 
   return <div className='profile'>
     <div className='profile__info'>

@@ -1,14 +1,15 @@
+import classNames from 'classnames';
 import * as React from 'react';
 import './Loader.css';
 import Spinner from './Spinner';
 
 interface LoaderProps {
-  a?: string
+  className?: string
 }
 
-const Loader: React.FC<LoaderProps> = (props) => {
+const Loader: React.FC<LoaderProps> = ({ className }) => {
   return (
-    <div className='loader'>
+    <div className={classNames('loader', className)}>
       <Spinner />
     </div>
   );

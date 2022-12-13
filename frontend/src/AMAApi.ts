@@ -1,5 +1,6 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
+import { AsyncData } from './models/AsyncData';
 import { IQuestion } from './models/Question';
 import { IUser } from './models/User';
 
@@ -15,6 +16,10 @@ export class AMAApi {
 
     const token = localStorage.getItem(tokenKey);
     if (token !== null) this.axios.defaults.headers.authorization = 'Bearer ' + token;
+  }
+
+  public getToken (): string | undefined {
+    return this.axios.defaults.headers.authorization?.toString();
   }
 
   public setToken (token: string): void {
@@ -40,36 +45,37 @@ export class AMAApi {
     return await this.axios.post('/signup', data);
   }
 
-  public async getUserMe (): Promise<IUser | null> {
+  public async getUserMe (): Promise<AxiosResponse<IUser>> {
+    return await this.axios.get('/users/me');
+  }
+
+  public async getUsers (params: URLSearchParams): Promise<AxiosResponse<IUser[]>> {
+    return await this.axios.get('/users', { params });
+  }
+
+  public async getQuestionsForMe (): Promise<AxiosResponse<IQuestion[]>> {
+    return await this.axios.get('/questions/me');
+  }
+
+  public async getMyQuestions (): Promise<AxiosResponse<IQuestion[]>> {
+    return await this.axios.get('/questions/my');
+  }
+
+  public async AxiosToAsyncData<T> (callback: () => Promise<AxiosResponse<T>>): Promise<AsyncData<T>> {
     try {
-      const responce = await this.axios.get('/users/me');
-      return responce.data;
-    } catch (err: any) {
-      if (err.code !== 'ERR_NETWORK') {
-        this.removeToken();
-        return null;
+      const responce = await callback();
+      return { payload: responce.data };
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        if (error.code === 'ERR_NETWORK') {
+          return { error };
+        } else {
+          this.removeToken();
+        }
+        return { error: error.response?.data };
       }
-      throw new Error('Api not responding!');
+      throw error;
     }
-  }
-
-  public async getUsers (params: URLSearchParams): Promise<IUser[] | null> {
-    try {
-      const responce = await this.axios.get('/users', { params });
-      return responce.data;
-    } catch (err: any) {
-      return null;
-    }
-  }
-
-  public async getQuestionsForMe (): Promise<IQuestion[]> {
-    const responce = await this.axios.get('/questions/me');
-    return responce.data;
-  }
-
-  public async getMyQuestions (): Promise<IQuestion[]> {
-    const responce = await this.axios.get('/questions/my');
-    return responce.data;
   }
 }
 

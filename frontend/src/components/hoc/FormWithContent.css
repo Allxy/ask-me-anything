@@ -6,3 +6,14 @@
 .form > button:disabled {
   opacity: 0.6;
 }
+
+.form__error {
+  height: 1em;
+  line-height: 1.1em;
+  text-align: center;
+  color: var(--color-error)
+}
+
+.form__spinner {
+  font-size: 2.5em;
+}

@@ -8,7 +8,7 @@ import {
 import { logger } from '../utils/logger';
 import { IUser, UserModel } from '../database/models/UserModel';
 import { idTransform } from '../database/transforms';
-import { HydratedDocument, isValidObjectId } from 'mongoose';
+import { FilterQuery, HydratedDocument, isValidObjectId } from 'mongoose';
 
 @JsonController('/users')
 export class UsersController {
@@ -67,13 +67,17 @@ export class UsersController {
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('')
   private async getUsers (
-    @QueryParam('limit') limit: number,
-      @QueryParam('page') page: number,
-      @QueryParam('login') login: string
+    @QueryParam('limit') limit: number = 10,
+    @QueryParam('page') page: number = 1,
+    @QueryParam('login') login?: string
   ): Promise<object> {
     logger.info('UserController:getUsers');
+    const query: FilterQuery<IUser> = {};
+    if (login !== undefined) {
+      query.login = { $regex: login };
+    }
 
-    const users = await UserModel.find({ login: { $regex: login } })
+    const users = await UserModel.find(query)
       .limit(limit)
       .skip(limit * (page - 1))
       .exec();

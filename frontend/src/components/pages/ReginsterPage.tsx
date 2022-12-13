@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { Link, useFetcher } from 'react-router-dom';
+import { IUser } from '../../models/User';
 import AuthContainer from '../containers/AuthContainer';
 import FormWithContent from '../hoc/FormWithContent';
 import useForm from '../hooks/useForm';
@@ -31,7 +32,7 @@ const validation = {
 };
 
 const RegisterPage: React.FC = () => {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<IUser | null>();
   const { values, errors, onChange, isValid, setCustomError } = useForm(initialValues);
 
   useEffect(() => {
@@ -48,7 +49,7 @@ const RegisterPage: React.FC = () => {
         className='auth__form'
         method="post"
         action="/sign-up"
-        form={fetcher.Form}
+        fetcher={fetcher}
         buttonText="Sign Up"
         isValid={isValid}
       >

@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Link, useFetcher } from 'react-router-dom';
+import { AsyncData } from '../../models/AsyncData';
+import { IUser } from '../../models/User';
 import AuthContainer from '../containers/AuthContainer';
 import FormWithContent from '../hoc/FormWithContent';
 import useForm from '../hooks/useForm';
@@ -12,13 +14,13 @@ const initialValues = {
 };
 
 const LoginPage: React.FC = () => {
-  const fetcher = useFetcher();
+  const fetcher = useFetcher<AsyncData<IUser>>();
   const { setUser } = useUser();
   const { values, errors, isValid, onChange } = useForm(initialValues);
 
   useEffect(() => {
-    if (fetcher?.data !== undefined && fetcher.data !== null) {
-      setUser(fetcher.data);
+    if ((fetcher.data) !== undefined) {
+      setUser(fetcher.data.payload ?? null);
     }
   }, [fetcher, setUser]);
 
@@ -28,7 +30,7 @@ const LoginPage: React.FC = () => {
         className="auth__form"
         method='post'
         action='/sign-in'
-        form={fetcher.Form}
+        fetcher={fetcher}
         buttonText="Sign In"
         isValid={isValid}
       >

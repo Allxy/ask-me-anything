@@ -1,38 +1,38 @@
 import React from 'react';
 import { createBrowserRouter, createRoutesFromElements, defer, Route, RouterProvider } from 'react-router-dom';
 import AMAApi from '../AMAApi';
+import { AsyncData } from '../models/AsyncData';
 import { ERole, IUser } from '../models/User';
-import { UserLayout, AuthLayout, ProtectedLayout } from './layouts';
-import { ErrorPage, LoginPage, RegisterPage, FeedPage, ProfilePage } from './pages';
+import { AuthLayout, ProtectedLayout, UserLayout } from './layouts';
+import { ErrorPage, FeedPage, LoginPage, ProfilePage, RegisterPage } from './pages';
 import SignOut from './pages/SignOutPage';
 
-async function signIn ({ request }: { request: Request }): Promise<IUser | null> {
-  try {
+async function signIn ({ request }: { request: Request }): Promise<AsyncData<IUser>> {
+  return await AMAApi.AxiosToAsyncData(async () => {
     const data = await AMAApi.getDataFromFromRequest(request);
     const responce = await AMAApi.signIn(data);
     AMAApi.setToken(responce.data.token);
-    const user = await AMAApi.getUserMe();
-    return user;
-  } catch (error) {
-    return null;
-  }
+    return await AMAApi.getUserMe();
+  });
 }
 
-async function signUp ({ request }: { request: Request }): Promise<boolean> {
-  try {
+async function signUp ({ request }: { request: Request }): Promise<AsyncData<IUser>> {
+  return await AMAApi.AxiosToAsyncData(async () => {
     const data = await AMAApi.getDataFromFromRequest(request);
-    await AMAApi.signUp(data);
-    return true;
-  } catch (error) {
-    return false;
-  }
+    return await AMAApi.signUp(data);
+  });
 }
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route
       element={<UserLayout />}
-      loader={() => defer({ userPromise: AMAApi.getUserMe() })}
+      loader={() => {
+        if (AMAApi.getToken() === undefined) {
+          return { userPromise: null };
+        }
+        return defer({ userPromise: AMAApi.AxiosToAsyncData(async () => await AMAApi.getUserMe()) });
+      }}
       errorElement={<ErrorPage />}
     >
       <Route
@@ -51,16 +51,18 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<ProtectedLayout role={ERole.USER} />}>
-        <Route path='/search' loader={async ({ request }) => await AMAApi.getUsers(new URL(request.url).searchParams)
-        } />
+        <Route
+          path='/search'
+          loader={async ({ request }) => await AMAApi.AxiosToAsyncData(async () => await AMAApi.getUsers(new URL(request.url).searchParams))}
+        />
         <Route path='/' element={<FeedPage />}></Route>
         <Route
           path='/profile'
           element={<ProfilePage />}
           loader={() => {
             return defer({
-              meQuestPromise: AMAApi.getQuestionsForMe(),
-              myQuestPromise: AMAApi.getMyQuestions()
+              meQuestPromise: AMAApi.AxiosToAsyncData(async () => await AMAApi.getQuestionsForMe()),
+              myQuestPromise: AMAApi.AxiosToAsyncData(async () => await AMAApi.getMyQuestions())
             });
           }}
         />

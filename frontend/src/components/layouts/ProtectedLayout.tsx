@@ -14,7 +14,7 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ role }) => {
     return <Navigate to="/sign-in" />;
   }
 
-  if (user.role !== role) {
+  if (user?.role !== role) {
     throw new Error('You have no rights!');
   }
 

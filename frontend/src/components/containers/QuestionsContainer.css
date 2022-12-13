@@ -1,3 +1,7 @@
 .questions {
   padding: 1em;
 }
+
+.questions__loader {
+  font-size: 3em;
+}

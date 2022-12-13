@@ -1,11 +1,11 @@
+import { useEffect, useState } from 'react';
 import { Link, useFetcher } from 'react-router-dom';
+import useDebounce from './hooks/useDebounce';
+import useUser from './hooks/useUser';
+import Avatar from './ui/Avatar';
 import Logo from './ui/Logo';
 import Search from './ui/Search';
-import Avatar from './ui/Avatar';
 import './Header.css';
-import { useEffect, useState } from 'react';
-import useUser from './hooks/useUser';
-import useDebounce from './hooks/useDebounce';
 
 function Header (): JSX.Element {
   const { data, load } = useFetcher();
@@ -31,7 +31,8 @@ function Header (): JSX.Element {
           onChange={setSearch}
           className='header__search'
           isLoading={isPending}
-          result={data ?? null}
+          result={data?.payload}
+          error={data?.error?.message}
         />}
 
         <nav className='header__nav'>
