@@ -6,6 +6,8 @@
   display: flex;
   justify-content: center;
   border-bottom: 2px solid var(--color-bg-light);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .header__container {

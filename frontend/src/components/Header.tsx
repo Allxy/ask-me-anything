@@ -8,7 +8,7 @@ import Search from './ui/Search';
 import './Header.css';
 
 function Header (): JSX.Element {
-  const { data, load } = useFetcher();
+  const { data, state, load } = useFetcher();
   const { user } = useUser();
   const [search, setSearch] = useState('');
   const [debouncedSearch, isPending] = useDebounce(search, 500);
@@ -30,7 +30,7 @@ function Header (): JSX.Element {
           value={search}
           onChange={setSearch}
           className='header__search'
-          isLoading={isPending}
+          isLoading={isPending || state === 'loading'}
           result={data?.payload}
           error={data?.error?.message}
         />}
@@ -42,7 +42,8 @@ function Header (): JSX.Element {
             <Link to='/sign-up'>Sign Up</Link>
           </>
           : <>
-            <Link className='header__profile-link' to="/profile">
+            <Link to="income">Income</Link>
+            <Link className='header__profile-link' to={`/user/${user.login}`}>
               <Avatar className='header__avatar' src="https://cdn.forbes.ru/forbes-static/608x342/new/2022/11/4-636273af4beec.webp" />
               <span>{user.login}</span>
             </Link>

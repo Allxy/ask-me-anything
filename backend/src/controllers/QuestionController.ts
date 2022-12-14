@@ -1,14 +1,18 @@
-import { HydratedDocument, isValidObjectId } from 'mongoose';
-import { Authorized, BadRequestError, Body, CurrentUser, Get, JsonController, NotFoundError, Param, Post } from 'routing-controllers';
-import { idTransform } from '../database/transforms';
+import { HydratedDocument } from 'mongoose';
+import { Body, CurrentUser, Get, JsonController, Param, Post } from 'routing-controllers';
+import { findUser } from '../database/finders';
 import { IQuestion, QuestionModel } from '../database/models/QuestionModel';
-import { IUser, UserModel } from '../database/models/UserModel';
+import { IUser } from '../database/models/UserModel';
+import { idTransform } from '../database/transforms';
 
 @JsonController('/questions')
 export class QuestionController {
   @Get('/me')
-  private async getMeQuestions (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
-    const questions = await QuestionModel.find({ owner: user.id }).populate('author').exec();
+  private async getQuestionsForMe (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
+    const questions = await QuestionModel
+      .find({ owner: user.id, answer: { $exists: false } })
+      .populate('author')
+      .exec();
 
     return questions
       .map((question) =>
@@ -24,56 +28,30 @@ export class QuestionController {
       );
   };
 
-  @Get('/my')
-  private async getMyQuestions (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
-    const questions = await QuestionModel.find({ author: user.id }).populate('owner').exec();
+  @Get('/:author')
+  private async getUserQuestions (@CurrentUser() user: HydratedDocument<IUser>, @Param('author') author: string): Promise<any> {
+    const authorDoc = await findUser(author);
 
-    return questions.map((question) => question.toObject({ versionKey: false, transform: idTransform }));
-  };
+    const questions = await QuestionModel
+      .find({ author: authorDoc, anonim: false })
+      .populate('owner author')
+      .exec();
 
-  @Authorized(['user', 'admin', 'moder', 'vip'])
-  @Get('/user/:owner')
-  private async getUserQuestions (@Param('owner') owner: string): Promise<any> {
-    let findUser;
-    if (isValidObjectId(owner)) {
-      findUser = await UserModel.findById(owner).exec();
-    } else {
-      findUser = await UserModel.findOne({ login: owner }).exec();
-    }
-
-    let questions;
-
-    try {
-      questions = await QuestionModel.find({ owner: (findUser != null) ? findUser.id : owner }).populate('author').exec();
-    } catch (e: any) {
-      throw new BadRequestError('User not found');
-    }
-
-    return questions
-      .map((question) =>
-        question.toObject({
-          versionKey: false,
-          transform: (doc, res) => {
-            if (doc.anonim === true) {
-              res.author = undefined;
-            }
-            return idTransform(doc, res);
-          }
-        })
-      );
+    return questions.map((question) =>
+      question.toObject({
+        versionKey: false,
+        transform: idTransform
+      })
+    );
   };
 
   @Post()
-  private async postQuestions (@CurrentUser() user: HydratedDocument<IUser>, @Body() { owner, anonim = true, body, title }: IQuestion): Promise<any> {
-    const ownerDoc = await UserModel.findById(owner).exec();
+  private async postQuestions (@CurrentUser() user: HydratedDocument<IUser>, @Body() { owner, anonim = true, text }: IQuestion): Promise<any> {
+    const ownerDoc = await findUser(owner);
 
-    if (ownerDoc !== null) {
-      const question = new QuestionModel({ author: user.id, owner, anonim, body, title });
-      await question.save();
-      const pop = await question.populate('owner author');
-      return pop.toObject({ versionKey: false, transform: idTransform });
-    }
-
-    throw new NotFoundError('User not found');
+    const question = new QuestionModel({ author: user.id, owner: ownerDoc.id, anonim, text });
+    await question.save();
+    const pop = await question.populate('owner author');
+    return pop.toObject({ versionKey: false, transform: idTransform });
   };
 }

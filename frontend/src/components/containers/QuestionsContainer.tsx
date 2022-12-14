@@ -1,35 +1,25 @@
-import { Suspense } from 'react';
-import { Await } from 'react-router-dom';
+import classNames from 'classnames';
+import { MouseEventHandler } from 'react';
 import { IQuestion } from '../../models/Question';
 import Question from '../presentation/Question';
-import Loader from '../ui/Loader';
-import classNames from 'classnames';
 import './QuestionsContainer.css';
-import { AsyncData } from '../../models/AsyncData';
 
 interface QuestionsContainerProps {
-  promise: Promise<AsyncData<IQuestion[]>>
-  className: string
+  questions: IQuestion[]
+  className?: string
   title?: string
+  onClick?: (id: string) => void
 }
 
-const QuestionsContainer: React.FC<QuestionsContainerProps> = ({ promise, className, title }) => {
+const QuestionsContainer: React.FC<QuestionsContainerProps> = ({ questions, className, title, onClick }) => {
   return (
     <section className={classNames('questions', className)}>
       { Boolean(title) && <h2>{title}</h2>}
-      <Suspense fallback={<Loader className="questions__loader" />}>
-        <Await
-          resolve={promise}
-          children={
-            (data) =>
-              data.payload.length > 0
-                ? data.payload.map((q: IQuestion) => <Question key={q._id} question={q} />)
-                : <p>No questions</p>
-          }
-          // TODO: Сделать нормальную ошибку
-          errorElement={<div>Questions could not loaded</div>}
-        />
-      </Suspense>
+      {
+        questions.length > 0
+          ? questions.map((q: IQuestion) => <Question onClick={() => onClick?.(q._id)} key={q._id} question={q} />).reverse()
+          : <p>There's nothing here</p>
+      }
     </section>
   );
 };

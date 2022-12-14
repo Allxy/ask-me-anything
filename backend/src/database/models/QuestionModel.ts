@@ -3,9 +3,9 @@ import mongoose, { Model, RefType, Schema } from 'mongoose';
 export interface IQuestion {
   author: RefType
   owner: RefType
-  title: String
-  body: String
+  text: String
   anonim: Boolean
+  answer?: String
 }
 
 export interface QuestionModelType extends Model<IQuestion> {
@@ -25,17 +25,20 @@ const questionSchema = new mongoose.Schema<IQuestion, QuestionModelType>({
     select: false,
     required: [true, 'is required']
   },
-  title: {
+  text: {
     type: String,
-    required: [true, 'is required']
-  },
-  body: {
-    type: String,
+    minlength: [5, 'must be at least 5'],
+    maxlength: [400, 'should be no more than 400'],
     required: [true, 'is required']
   },
   anonim: {
     type: Boolean,
     required: [true, 'is required']
+  },
+  answer: {
+    type: String,
+    minlength: [5, 'must be at least 5'],
+    maxlength: [400, 'should be no more than 400']
   }
 });
 

@@ -32,7 +32,7 @@ export class AMAApi {
     localStorage.removeItem(this.tokenKey);
   }
 
-  public async getDataFromFromRequest (request: Request): Promise<object> {
+  public async getDataFromFromRequest (request: Request): Promise<any> {
     const data = await request.formData();
     return Object.fromEntries(data);
   }
@@ -53,12 +53,26 @@ export class AMAApi {
     return await this.axios.get('/users', { params });
   }
 
-  public async getQuestionsForMe (): Promise<AxiosResponse<IQuestion[]>> {
+  public async getUser (user: string): Promise<AxiosResponse<IUser>> {
+    return await this.axios.get(`/users/${user}`);
+  }
+
+  public async postQuestion (data: any): Promise<AxiosResponse<IQuestion>> {
+    return await this.axios.post('/questions', data);
+  }
+
+  public async getQuestions (): Promise<AxiosResponse<IQuestion[]>> {
     return await this.axios.get('/questions/me');
   }
 
-  public async getMyQuestions (): Promise<AxiosResponse<IQuestion[]>> {
-    return await this.axios.get('/questions/my');
+  public async getUserAnswers (user: string): Promise<AxiosResponse<IQuestion[]>> {
+    return await this.axios.get(`/answers/${user}`);
+  }
+
+  public async postAnswer (data: any): Promise<AxiosResponse<IQuestion>> {
+    console.log(data);
+
+    return await this.axios.post('/answers', data);
   }
 
   public async AxiosToAsyncData<T> (callback: () => Promise<AxiosResponse<T>>): Promise<AsyncData<T>> {
@@ -69,8 +83,6 @@ export class AMAApi {
       if (error instanceof AxiosError) {
         if (error.code === 'ERR_NETWORK') {
           return { error };
-        } else {
-          this.removeToken();
         }
         return { error: error.response?.data };
       }

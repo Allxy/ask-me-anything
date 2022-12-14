@@ -41,17 +41,21 @@ function Search ({ className, isLoading, value, onChange, error, result }: Searc
         showResult && showStatus && 'search__result_show'
       )
       }>
-        { result?.map((el) => (
-            <Link key={el.login}
-              style={{ color: 'black' }}
-              to={`/user/${el.login}`}
-            >
-              {el.login}
-            </Link>
-        ))}
+        <p className='search__status'>
+          {!isLoading ? (!showResult && 'No Results') : 'Loading...'}
+        </p>
+        <p className='search__error'>
+          {error !== undefined && error}
+        </p>
 
-        {!showResult && !isLoading && <p style={{ color: 'black', margin: 0 }}>No Results {error}</p>}
-        {isLoading && <p style={{ color: 'black', margin: 0 }}>Loading...</p>}
+        {!isLoading && result?.map((el) => (
+          <Link key={el.login}
+            style={{ color: 'black' }}
+            to={`/user/${el.login}`}
+          >
+            {el.login}
+          </Link>
+        ))}
       </div>
     </div>
   );

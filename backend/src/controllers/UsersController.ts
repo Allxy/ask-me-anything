@@ -8,7 +8,8 @@ import {
 import { logger } from '../utils/logger';
 import { IUser, UserModel } from '../database/models/UserModel';
 import { idTransform } from '../database/transforms';
-import { FilterQuery, HydratedDocument, isValidObjectId } from 'mongoose';
+import { FilterQuery, HydratedDocument } from 'mongoose';
+import { findUser } from '../database/finders';
 
 @JsonController('/users')
 export class UsersController {
@@ -50,18 +51,14 @@ export class UsersController {
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('/:user')
   private async getUser (@Param('user') user: string): Promise<object> {
-    let findUser;
-    if (isValidObjectId(user)) {
-      findUser = await UserModel.findById(user).exec();
-    } else {
-      findUser = await UserModel.findOne({ login: user }).exec();
-    }
+    const userDoc = await findUser(user);
 
-    if (findUser !== undefined && findUser !== null) {
-      return await findUser.toObject({ versionKey: false, transform: idTransform });
-    }
-
-    throw new BadRequestError('User not found');
+    return await userDoc.toObject(
+      {
+        versionKey: false,
+        transform: idTransform
+      }
+    );
   }
 
   @Authorized(['user', 'admin', 'moder', 'vip'])
