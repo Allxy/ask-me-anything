@@ -18,4 +18,25 @@
   text-decoration: none;
   color: inherit;
   margin: 1em 0 0;
+  text-align: center;
+}
+
+.auth__form {
+  display: flex;
+  flex-direction: column;
+}
+
+.auth__form > button:disabled {
+  opacity: 0.6;
+}
+
+.auth__error {
+  height: 1em;
+  line-height: 1.1em;
+  text-align: center;
+  color: var(--color-error)
+}
+
+.auth__spinner {
+  font-size: 2.5em;
 }

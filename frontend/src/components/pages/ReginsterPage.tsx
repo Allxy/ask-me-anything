@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { Link, useFetcher } from 'react-router-dom';
+import { useFetcher } from 'react-router-dom';
 import { IUser } from '../../models/User';
 import AuthContainer from '../containers/AuthContainer';
-import FormWithContent from '../hoc/FormWithContent';
 import useForm from '../hooks/useForm';
 import InputWithError from '../ui/InputWithError';
 
@@ -44,14 +43,16 @@ const RegisterPage: React.FC = () => {
   }, [values, errors, setCustomError]);
 
   return (
-    <AuthContainer title="Sign Up">
-      <FormWithContent
+    <>
+      <AuthContainer
+        title="Sign Up"
         className='auth__form'
-        method="post"
         action="/sign-up"
         fetcher={fetcher}
         buttonText="Sign Up"
         isValid={isValid}
+        link="/sign-in"
+        linkTitle="Already have account? Sign In!"
       >
         {Object.keys(values).map((key) =>
           <InputWithError
@@ -66,9 +67,10 @@ const RegisterPage: React.FC = () => {
             {...validation[key as keyof typeof validation]}
           />
         )}
-      </FormWithContent>
-      <Link className='auth__link' to="/sign-in">You have no account? Sign Up!</Link>
-    </AuthContainer>
+      </AuthContainer>
+
+    </>
+
   );
 };
 
