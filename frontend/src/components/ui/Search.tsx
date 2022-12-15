@@ -49,7 +49,7 @@ function Search ({ className, isLoading, value, onChange, error, result }: Searc
         </p>
 
         {!isLoading && result?.map((el) => (
-          <Link key={el.login}
+          <Link onClick={() => onChange('')} key={el.login}
             style={{ color: 'black' }}
             to={`/user/${el.login}`}
           >

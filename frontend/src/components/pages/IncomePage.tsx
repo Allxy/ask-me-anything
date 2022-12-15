@@ -1,4 +1,4 @@
-import { MouseEvent, Suspense, useState } from 'react';
+import { Suspense, useState } from 'react';
 import { Await, useFetcher } from 'react-router-dom';
 import { IQuestion } from '../../models/Question';
 import QuestionsContainer from '../containers/QuestionsContainer';
@@ -10,7 +10,7 @@ import './IncomePage.css';
 const IncomePage: React.FC = () => {
   const { questionsPromise } = useLoaderTypedData<Promise<IQuestion[]>>();
   const [isOpened, setIsOpened] = useState(false);
-  const [currentQuestionm, setCurrentQuestion] = useState('');
+  const [currentQuestion, setCurrentQuestion] = useState('');
   const fetcher = useFetcher();
 
   function handleQuestionClick (questionId: string): void {
@@ -29,7 +29,7 @@ const IncomePage: React.FC = () => {
         }
       />
       <Modal onClose={() => setIsOpened(false)} isOpened={isOpened}>
-        <fetcher.Form action={`/income/${currentQuestionm}`} method='post'>
+        <fetcher.Form action={`/income/${currentQuestion}`} method='post' >
           <h2>Answer</h2>
           <div className='ask__text-area-bg'>
             <textarea name='answer' className='ask__text-area' />
@@ -38,6 +38,7 @@ const IncomePage: React.FC = () => {
             <Button className='ask__send'>Send</Button>
           </div>
         </fetcher.Form>
+        <div>{}</div>
       </Modal>
     </Suspense>
   );

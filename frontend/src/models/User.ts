@@ -12,3 +12,5 @@ export enum ERole {
   MODER = 'moder',
   VIP = 'vip'
 }
+
+export const allRoles = [ERole.ADMIN, ERole.USER, ERole.MODER, ERole.VIP];

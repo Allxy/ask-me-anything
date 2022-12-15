@@ -31,8 +31,7 @@ function Header (): JSX.Element {
           onChange={setSearch}
           className='header__search'
           isLoading={isPending || state === 'loading'}
-          result={data?.payload}
-          error={data?.error?.message}
+          result={data}
         />}
 
         <nav className='header__nav'>

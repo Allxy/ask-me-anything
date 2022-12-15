@@ -1,6 +1,5 @@
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
-import { AsyncData } from './models/AsyncData';
 import { IQuestion } from './models/Question';
 import { IUser } from './models/User';
 
@@ -70,24 +69,7 @@ export class AMAApi {
   }
 
   public async postAnswer (data: any): Promise<AxiosResponse<IQuestion>> {
-    console.log(data);
-
     return await this.axios.post('/answers', data);
-  }
-
-  public async AxiosToAsyncData<T> (callback: () => Promise<AxiosResponse<T>>): Promise<AsyncData<T>> {
-    try {
-      const responce = await callback();
-      return { payload: responce.data };
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        if (error.code === 'ERR_NETWORK') {
-          return { error };
-        }
-        return { error: error.response?.data };
-      }
-      throw error;
-    }
   }
 }
 
