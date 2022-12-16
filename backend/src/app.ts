@@ -8,7 +8,7 @@ import path from 'path';
 
 const logger = log4js.getLogger();
 logger.level = process.env.BACKEND_LOG_LEVEL ?? 'error';
-const port = process.env.BACKEND_PORT ?? 5000;
+const port = process.env.PORT ?? 3001;
 
 const {
   MONGODB_USER = '',
