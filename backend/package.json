@@ -5,7 +5,6 @@
     "dev": "nodemon",
     "prebuild": "npm run lint",
     "build": "rm -rf ./build/ && tsc",
-    "prestart": "npm run build",
     "start": "node build/app.js",
     "server:watch": "ts-node-dev --respawn --transpile-only src/app.ts",
     "lint:fix": "eslint --cache --ext .ts . --fix",
