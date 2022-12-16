@@ -20,7 +20,7 @@ const {
 
 async function start (): Promise<void> {
   mongoose.set('strictQuery', false);
-  await mongoose.connect(`mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_DOCKER_PORT}/${MONGODB_DATABASE}?authSource=admin`);
+  await mongoose.connect(`mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_DOCKER_PORT}/${MONGODB_DATABASE}`);
 
   const app = createExpressServer({
     cors: true,
