@@ -8,7 +8,7 @@ import path from 'path';
 
 const logger = log4js.getLogger();
 logger.level = process.env.BACKEND_LOG_LEVEL ?? 'error';
-const port = process.env.PORT ?? 3001;
+const port = process.env.PORT ?? 5000;
 
 const {
   MONGODB_USER = '',
@@ -20,12 +20,12 @@ const {
 
 async function start (): Promise<void> {
   mongoose.set('strictQuery', false);
-  await mongoose.connect(`mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_DOCKER_PORT}/${MONGODB_DATABASE}`);
+  await mongoose.connect(`mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@${MONGODB_HOST}:${MONGODB_DOCKER_PORT}/${MONGODB_DATABASE}${(process.env.NODE_ENV !== 'production') ? '?authSource=admin' : ''}`);
 
   const app = createExpressServer({
     cors: true,
-    middlewares: [path.join(__dirname, '/middlewares/**/*.ts')],
-    controllers: [path.join(__dirname, '/controllers/**/*.ts')],
+    middlewares: [path.join(__dirname, '/middlewares/**/*.ts'), path.join(__dirname, '/middlewares/**/*.js')],
+    controllers: [path.join(__dirname, '/controllers/**/*.ts'), path.join(__dirname, '/controllers/**/*.js')],
     authorizationChecker: (action: Action, roles: IRole[]) => {
       if (action.request.headers.authorization !== undefined) {
         try {
