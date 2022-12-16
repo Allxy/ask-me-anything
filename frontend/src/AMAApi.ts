@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
+import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
 import { IQuestion } from './models/Question';
 import { IUser } from './models/User';
@@ -64,8 +64,8 @@ export class AMAApi {
     return await this.axios.get('/questions/me');
   }
 
-  public async getUserAnswers (user: string): Promise<AxiosResponse<IQuestion[]>> {
-    return await this.axios.get(`/answers/${user}`);
+  public async getAnswers (user?: string, params?: URLSearchParams): Promise<AxiosResponse<IQuestion[]>> {
+    return await this.axios.get('/answers' + (user !== undefined ? `/${user}` : ''), { params });
   }
 
   public async postAnswer (data: any): Promise<AxiosResponse<IQuestion>> {

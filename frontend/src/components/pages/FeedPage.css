@@ -1,0 +1,9 @@
+.feed {
+  max-width: 55em;
+  width: 100%;
+}
+
+.feed_nomore{
+  text-align: center;
+  font-size: 1em;
+}

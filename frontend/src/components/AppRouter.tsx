@@ -21,15 +21,14 @@ const router = createBrowserRouter(
 
       <Route element={<ProtectedLayout roles={allRoles} />} >
         <Route path='search' loader={searchLoader} />
-        <Route path='' element={<FeedPage />} />
+        <Route path='/' element={<FeedPage />} loader={answersLoader} />
         <Route
           path='user/:userID'
           element={<ProfilePage />}
           loader={async (args) => ({
             currentUser: await userLoader(args),
             answers: await answersLoader(args)
-          })
-          }
+          })}
         >
           <Route path='ask' action={sendQuestion} />
         </Route>

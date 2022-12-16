@@ -1,11 +1,39 @@
 import { HydratedDocument, isValidObjectId } from 'mongoose';
-import { Authorized, BadRequestError, Body, CurrentUser, Get, JsonController, Param, Post } from 'routing-controllers';
+import { Authorized, BadRequestError, Body, CurrentUser, Get, JsonController, Param, Post, QueryParam } from 'routing-controllers';
 import { IQuestion, QuestionModel } from '../database/models/QuestionModel';
 import { IUser, UserModel } from '../database/models/UserModel';
 import { idTransform } from '../database/transforms';
 
 @JsonController('/answers')
 export class AnswersController {
+  @Authorized(['user', 'admin', 'moder', 'vip'])
+  @Get()
+  private async getAnswers (
+    @QueryParam('limit') limit: number = 10,
+    @QueryParam('page') page: number = 1
+  ): Promise<any> {
+    const answers = await QuestionModel
+      .find({ answer: { $exists: true } })
+      .sort({ updatedAt: -1 })
+      .limit(limit)
+      .skip(limit * (page - 1))
+      .populate('author owner')
+      .exec();
+
+    return answers
+      .map((answer) =>
+        answer.toObject({
+          versionKey: false,
+          transform: (doc, res) => {
+            if (doc.anonim === true) {
+              res.author = undefined;
+            }
+            return idTransform(doc, res);
+          }
+        })
+      );
+  }
+
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('/:owner')
   private async getUserAnswers (@Param('owner') owner: string): Promise<any> {
@@ -22,6 +50,7 @@ export class AnswersController {
 
     const answers = await QuestionModel
       .find({ owner: findUser.id, answer: { $exists: true } })
+      .sort({ updatedAt: -1 })
       .populate('author owner')
       .exec();
 

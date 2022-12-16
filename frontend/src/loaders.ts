@@ -34,6 +34,10 @@ export const userLoader: LoaderFunction = async ({ params }) => {
     const response = await AMAApi.getUser(params.userID ?? '');
     return response.data;
   } catch (error: any) {
+    if (error.code === 'ERR_BAD_REQUEST') {
+      throw error.response.data;
+    }
+
     if (error.code !== 'ERR_NETWORK') {
       return error.response.data;
     }
@@ -41,9 +45,10 @@ export const userLoader: LoaderFunction = async ({ params }) => {
   }
 };
 
-export const answersLoader: LoaderFunction = async ({ params }) => {
+export const answersLoader: LoaderFunction = async ({ request, params }) => {
   try {
-    const response = await AMAApi.getUserAnswers(params.userID ?? '');
+    const searchParams = new URL(request.url).searchParams;
+    const response = await AMAApi.getAnswers(params.userID, searchParams);
     return response.data;
   } catch (error: any) {
     if (error.code !== 'ERR_NETWORK') {

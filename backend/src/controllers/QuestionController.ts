@@ -11,6 +11,7 @@ export class QuestionController {
   private async getQuestionsForMe (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
     const questions = await QuestionModel
       .find({ owner: user.id, answer: { $exists: false } })
+      .sort({ createdAt: -1 })
       .populate('author')
       .exec();
 

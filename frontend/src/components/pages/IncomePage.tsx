@@ -1,4 +1,4 @@
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { Await, useFetcher } from 'react-router-dom';
 import { IQuestion } from '../../models/Question';
 import QuestionsContainer from '../containers/QuestionsContainer';
@@ -13,9 +13,18 @@ const IncomePage: React.FC = () => {
   const [currentQuestion, setCurrentQuestion] = useState('');
   const fetcher = useFetcher();
 
+  useEffect(() => {
+    console.log(fetcher);
+
+    if (fetcher.data?.answer !== undefined) {
+      setIsOpened(false);
+    }
+  }, [fetcher]);
+
   function handleQuestionClick (questionId: string): void {
     setIsOpened(true);
     setCurrentQuestion(questionId);
+    delete fetcher.data;
   }
 
   return (
@@ -38,7 +47,7 @@ const IncomePage: React.FC = () => {
             <Button className='ask__send'>Send</Button>
           </div>
         </fetcher.Form>
-        <div>{}</div>
+        <div>{fetcher.data?.message}</div>
       </Modal>
     </Suspense>
   );

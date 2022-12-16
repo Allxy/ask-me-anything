@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useFetcher } from 'react-router-dom';
+import { useFetcher, useNavigate } from 'react-router-dom';
 import { IUser } from '../../models/User';
 import AuthContainer from '../containers/AuthContainer';
 import useForm from '../hooks/useForm';
@@ -33,6 +33,7 @@ const validation = {
 const RegisterPage: React.FC = () => {
   const fetcher = useFetcher<IUser | null>();
   const { values, errors, onChange, isValid, setCustomError } = useForm(initialValues);
+  const natigate = useNavigate();
 
   useEffect(() => {
     if (values.confirm !== values.password && errors.confirm === undefined) {
@@ -42,6 +43,12 @@ const RegisterPage: React.FC = () => {
     }
   }, [values, errors, setCustomError]);
 
+  useEffect(() => {
+    if (fetcher.data?.login !== undefined) {
+      natigate('/sign-in');
+    }
+  }, [fetcher]);
+
   return (
     <>
       <AuthContainer
@@ -50,7 +57,7 @@ const RegisterPage: React.FC = () => {
         action="/sign-up"
         fetcher={fetcher}
         buttonText="Sign Up"
-        isValid={isValid}
+        isValid={isValid && values.confirm === values.password}
         link="/sign-in"
         linkTitle="Already have account? Sign In!"
       >

@@ -1,8 +1,41 @@
 .question {
-  border: solid 1px;
+  border: solid 1px var(--color-bg-light);
   border-radius: 1em;
   padding: 1em;
   margin-bottom: 1em;
+  background-color: var(--color-bg-main);
+  color: var(--color-text-main);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.question__header {
+  margin: 0;
+}
+
+.question__title {
+  display: inline;
+  font-size: 1.2em;
+  font-weight: 700;
+  margin: 0 0.5em 0 0;
+}
+
+.question__author {
+  display: inline;
+  text-decoration: none;
+  color: var(--color-text-dark);
+}
+
+.question__answer {
+  font-size: 1em;
+  font-weight: 400;
+}
+
+.question__date {
+  font-size: 0.8em;
+  font-weight: 400;
+  color: var(--color-text-dark);
 }
 
 .question:last-child {

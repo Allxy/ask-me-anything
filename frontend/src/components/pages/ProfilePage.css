@@ -49,6 +49,11 @@
   margin-left: auto;
 }
 
+.ask__error {
+  color: var(--color-error);
+  margin-left: 1em;
+}
+
 .info {
   display: flex;
   gap: 1em;

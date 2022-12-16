@@ -40,6 +40,6 @@ const questionSchema = new mongoose.Schema<IQuestion, QuestionModelType>({
     minlength: [5, 'must be at least 5'],
     maxlength: [400, 'should be no more than 400']
   }
-});
+}, { timestamps: true });
 
 export const QuestionModel = mongoose.model<IQuestion, QuestionModelType>('Question', questionSchema);

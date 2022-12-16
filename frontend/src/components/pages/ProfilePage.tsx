@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react';
 import { useFetcher } from 'react-router-dom';
 import QuestionsContainer from '../containers/QuestionsContainer';
 import { useLoaderTypedData } from '../hooks/useLoaderTypedData';
@@ -11,6 +12,15 @@ const ProfilePage: React.FC = () => {
   const { currentUser } = useLoaderTypedData();
   const { answers } = useLoaderTypedData();
   const fetcher = useFetcher();
+  const [error, setError] = useState('');
+  const [text, setText] = useState('');
+
+  useEffect(() => {
+    setError(fetcher.data?.message);
+    if (fetcher.data?.text !== undefined && fetcher.state === 'idle') {
+      setText('');
+    }
+  }, [fetcher]);
 
   return (
     <div className='profile'>
@@ -24,15 +34,18 @@ const ProfilePage: React.FC = () => {
 
       <div className='profile__ask ask'>
         <fetcher.Form action='ask' method='post'>
-          <h2>Ask {currentUser.login === user?.login ? 'yourself' : 'sads'}</h2>
+          <h2>Ask {currentUser.login === user?.login ? 'yourself' : currentUser.login} about something interesting</h2>
           <div className='ask__text-area-bg'>
-            <textarea name='text' className='ask__text-area' />
+            <textarea value={text} onChange={(e) => setText(e.target.value)} name='text' className='ask__text-area' />
           </div>
           <div className='ask__control'>
             <label>
               <input name='anonim' type="checkbox"></input>
               <span>Anon</span>
             </label>
+            <div className='ask__error'>
+              {error}
+            </div>
             <Button className='ask__send'>Send</Button>
           </div>
         </fetcher.Form>

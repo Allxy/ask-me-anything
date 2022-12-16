@@ -48,7 +48,8 @@ export const sendAnswer: ActionFunction = async ({ request, params }) => {
   try {
     const data = await AMAApi.getDataFromFromRequest(request);
     data.question = params.questionId;
-    return await AMAApi.postAnswer(data);
+    const response = await AMAApi.postAnswer(data);
+    return response.data;
   } catch (error: any) {
     if (error.code !== 'ERR_NETWORK') {
       return error.response.data;

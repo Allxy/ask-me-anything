@@ -1,12 +1,11 @@
+import bcrypt from 'bcrypt';
+import { Response } from 'express';
+import jwt from 'jsonwebtoken';
 import {
-  JsonController,
-  Post,
-  BadRequestError, Body, Res, InternalServerError
+  BadRequestError, Body, InternalServerError, JsonController,
+  Post, Res
 } from 'routing-controllers';
 import { IUser, UserModel } from '../database/models/UserModel';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { Response } from 'express';
 import { idTransform } from '../database/transforms';
 
 @JsonController('')
@@ -31,22 +30,22 @@ export class AuthController {
 
   @Post('/signup')
   private async getUserMe (@Body() { name, email, password, login }: IUser): Promise<any> {
-    const find = await UserModel.findOne({ email }).exec();
+    email = email.toLowerCase();
+    const find = await UserModel.findOne({ $or: [{ email }, { login }] }).select('+email').exec();
     if (find != null) {
-      throw new BadRequestError('User is already exists with this email');
+      throw new BadRequestError(`User is already exists with this ${email === find.email ? 'email' : 'login'}`);
     }
 
-    const User = new UserModel({ name, email: email.toLowerCase(), password, role: 'user', login });
+    const User = new UserModel({ name, email, password, role: 'user', login });
     try {
       await User.validate();
+      User.password = await bcrypt.hash(User.password, 10);
+      await User.save();
     } catch (error: any) {
       throw new BadRequestError(error.message);
     }
 
-    User.password = await bcrypt.hash(User.password, 10);
-    await User.save();
-    const createdUser = await UserModel.findOne({ email: email.toLowerCase() }).exec();
-
+    const createdUser = await UserModel.findOne({ email }).exec();
     if (createdUser === undefined) {
       throw new InternalServerError('Something went wrong, user not created');
     }
