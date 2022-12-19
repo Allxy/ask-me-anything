@@ -12,8 +12,8 @@
     "docker:start": "docker-compose -f docker-compose.yml start",
     "docker:stop": "docker-compose -f docker-compose.yml stop",
     "docker:restart": "docker-compose -f docker-compose.yml restart",
-    "docker:back:i" : "docker cp ./backend/package.json mern-backend:/usr/app && docker exec -it -u 0 mern-backend npm install",
-    "docker:front:i" : "docker cp ./frontend/package.json mern-frontend:/usr/app && docker exec -it -u 0 mern-frontend npm install"
+    "docker:back:i": "docker cp ./backend/package.json mern-backend:/usr/app && docker exec -it -u 0 mern-backend npm install",
+    "docker:front:i": "docker cp ./frontend/package.json mern-frontend:/usr/app && docker exec -it -u 0 mern-frontend npm install"
   },
   "keywords": [],
   "author": "Allxy01@gmail.com (Allxy)",
@@ -22,6 +22,7 @@
     "concurrently": "^7.3.0"
   },
   "dependencies": {
-    "@types/bcrypt": "^5.0.0"
+    "@types/bcrypt": "^5.0.0",
+    "class-transformer": "^0.3.1"
   }
 }

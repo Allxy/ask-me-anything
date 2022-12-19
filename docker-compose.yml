@@ -1,15 +1,14 @@
 version: "3"
 services:
-
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
     ports:
       - ${FRONTEND_PORT}:${FRONTEND_PORT}
-    container_name: mern-frontend
+    container_name: ama-frontend
     networks:
-      - ama-frontend
+      - ama-frontend-net
     volumes:
       - ./frontend/src:/usr/app/src
       - ./frontend/public:/usr/app/public
@@ -26,10 +25,10 @@ services:
       - .env
     ports:
       - ${BACKEND_PORT}:${BACKEND_PORT}
-    container_name: mern-backend
+    container_name: ama-backend
     networks:
-      - ama-backend
-      - ama-frontend
+      - ama-backend-net
+      - ama-frontend-net
     volumes:
       - ./backend/src:/usr/app/src
       - ./backend/package.json:/usr/app/package.json
@@ -42,20 +41,19 @@ services:
     image: mongo
     ports:
       - ${MONGODB_LOCAL_PORT}:${MONGODB_DOCKER_PORT}
-    container_name: mongo-db
+    container_name: ama-mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=$MONGODB_USER
       - MONGO_INITDB_ROOT_PASSWORD=$MONGODB_PASSWORD
       - MONGO_INITDB_DATABASE=$MONGODB_DATABASE
     networks:
-      - ama-backend
+      - ama-backend-net
     volumes:
       - mongo-data:/data/db
 
 networks:
-  ama-frontend:
-  ama-backend:
-
+  ama-frontend-net:
+  ama-backend-net:
 
 volumes:
   mongo-data:
