@@ -23,7 +23,7 @@ export class AuthController {
       throw new BadRequestError('Wrong password');
     }
 
-    const token = jwt.sign({ id: find.id, role: find.role }, process.env.BACKEND_JWT_SECRET ?? 'secret', { expiresIn: '10d' });
+    const token = jwt.sign({ id: find.id, role: find.role }, process.env.JWT_SECRET ?? 'secret', { expiresIn: '10d' });
 
     return { token };
   }

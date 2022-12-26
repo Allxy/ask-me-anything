@@ -11,7 +11,6 @@ export interface IUser {
 }
 
 export interface UserModelType extends Model<IUser> {
-
 };
 
 const userSchema = new mongoose.Schema<IUser, UserModelType>({

@@ -5,13 +5,13 @@ import {
   Authorized,
   CurrentUser, Patch, Body, BadRequestError, Param
 } from 'routing-controllers';
-import { logger } from '../utils/logger';
+import logger from '../utils/logger';
 import { IUser, UserModel } from '../database/models/UserModel';
 import { idTransform } from '../database/transforms';
 import { FilterQuery, HydratedDocument } from 'mongoose';
 import { findUser } from '../database/finders';
 
-@JsonController('/users')
+@JsonController('/users', { transformResponse: false })
 export class UsersController {
   @Get('/me')
   private async getUserMe (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
@@ -50,15 +50,9 @@ export class UsersController {
 
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('/:user')
-  private async getUser (@Param('user') user: string): Promise<object> {
+  private async getUser (@Param('user') user: string): Promise<any> {
     const userDoc = await findUser(user);
-
-    return await userDoc.toObject(
-      {
-        versionKey: false,
-        transform: idTransform
-      }
-    );
+    return userDoc;
   }
 
   @Authorized(['user', 'admin', 'moder', 'vip'])
@@ -67,7 +61,7 @@ export class UsersController {
     @QueryParam('limit') limit: number = 10,
     @QueryParam('page') page: number = 1,
     @QueryParam('login') login?: string
-  ): Promise<object> {
+  ): Promise<any> {
     logger.info('UserController:getUsers');
     const query: FilterQuery<IUser> = {};
     if (login !== undefined) {
@@ -76,13 +70,8 @@ export class UsersController {
 
     const users = await UserModel.find(query)
       .limit(limit)
-      .skip(limit * (page - 1))
-      .exec();
+      .skip(limit * (page - 1));
 
-    return users.map((user) => user.toObject(
-      {
-        versionKey: false,
-        transform: idTransform
-      }));
+    return users;
   }
 }
