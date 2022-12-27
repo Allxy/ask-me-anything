@@ -14,8 +14,6 @@ const IncomePage: React.FC = () => {
   const fetcher = useFetcher();
 
   useEffect(() => {
-    console.log(fetcher);
-
     if (fetcher.data?.answer !== undefined) {
       setIsOpened(false);
     }
