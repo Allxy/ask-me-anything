@@ -36,7 +36,7 @@ const router = createBrowserRouter(
         <Route
           path='income'
           element={<IncomePage />}
-          loader={(args) => defer({ questionsPromise: questionsLoader(args) })}
+          loader={questionsLoader}
         >
           <Route
             path=':questionId'

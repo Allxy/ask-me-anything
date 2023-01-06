@@ -1,58 +1,78 @@
-import { useEffect, useRef, useState } from 'react';
+import { Avatar, Box, Button, Checkbox, Container, Flex, FormControl, FormErrorMessage, Heading, HStack, Stack, Switch, Text, Textarea, Tooltip } from '@chakra-ui/react';
+import { useEffect, useState } from 'react';
 import { useFetcher } from 'react-router-dom';
-import QuestionsContainer from '../containers/QuestionsContainer';
-import { useLoaderTypedData } from '../hooks/useLoaderTypedData';
-import useUser from '../hooks/useUser';
-import Avatar from '../ui/Avatar';
-import Button from '../ui/Button';
-import './ProfilePage.css';
+import useForm from '../../hooks/useForm';
+import { useLoaderTypedData } from '../../hooks/useLoaderTypedData';
+import useUser from '../../hooks/useUser';
+import { IQuestion } from '../../models/Question';
+import Answer from '../presentation/Answer';
 
 const ProfilePage: React.FC = () => {
   const { user } = useUser();
   const { currentUser } = useLoaderTypedData();
   const { answers } = useLoaderTypedData();
   const fetcher = useFetcher();
-  const [error, setError] = useState('');
-  const [text, setText] = useState('');
+  const { values, onChange, resetForm, errors, isValid } = useForm({ text: '' });
 
   useEffect(() => {
-    setError(fetcher.data?.message);
     if (fetcher.data?.text !== undefined && fetcher.state === 'idle') {
-      setText('');
+      resetForm();
     }
   }, [fetcher]);
 
   return (
-    <div className='profile'>
-      <div className='profile__info info'>
-        <Avatar className='info__avatar' src={'https://cdn.forbes.ru/forbes-static/608x342/new/2022/11/4-636273af4beec.webp'} />
-        <div className="info__about">
-          <p className="info__login">@{currentUser.login}</p>
-          <p className="info__name">{currentUser.name}</p>
-        </div>
-      </div>
+    <Container maxW='container.md'>
+    <Stack spacing='4'>
+      <HStack spacing='4'>
+        <Avatar name={user?.name} size='xl' />
+        <Stack>
+          <Text fontSize='xs'>@{currentUser.login}</Text>
+          <Heading as='h1' size='xs'>{currentUser.name}</Heading>
+        </Stack>
+      </HStack>
 
-      <div className='profile__ask ask'>
-        <fetcher.Form action='ask' method='post'>
-          <h2>Ask {currentUser.login === user?.login ? 'yourself' : currentUser.login} about something interesting</h2>
-          <div className='ask__text-area-bg'>
-            <textarea value={text} onChange={(e) => setText(e.target.value)} name='text' className='ask__text-area' />
-          </div>
-          <div className='ask__control'>
-            <label>
-              <input name='anonim' type="checkbox"></input>
-              <span>Anon</span>
-            </label>
-            <div className='ask__error'>
-              {error}
-            </div>
-            <Button className='ask__send'>Send</Button>
-          </div>
-        </fetcher.Form>
-      </div>
+      <Box
+        p={4}
+        bg='gray.100'
+        _dark={{ bg: 'gray.700' }}
+        rounded='lg'
+        shadow='lg'
+      >
+        <Heading as='h2' size='md' mb='4'>
+          Ask {currentUser.login === user?.login ? 'yourself' : currentUser.login} about something interesting
+        </Heading>
+        <FormControl as={fetcher.Form} action='ask' method='post'>
+          <Tooltip label={errors.text}>
+            <Textarea
+              value={values.text}
+              onChange={onChange}
+              name='text'
+              required
+              minLength={5}
+              isInvalid={Boolean(errors.text)}
+              mb='4'
+              bgColor='Background'
+            />
+          </Tooltip>
+          <Flex alignItems='center'>
+            <Switch name='anonim' type='checkbox' value='on'>
+              Ask anonymously
+            </Switch>
+            <Button ml='auto' type='submit' disabled={!isValid}>Send</Button>
+          </Flex>
+        </FormControl>
+      </Box>
 
-      <QuestionsContainer title="Answers" className='profile__section' questions={answers} />
-    </div>
+      <Stack spacing='4'>
+        <Heading as='h2' size='md' ml='4'>Answers</Heading>
+        {
+          answers.length > 0
+            ? answers.map((q: IQuestion) => <Answer key={q._id} question={q} />)
+            : <p>There's nothing here</p>
+        }
+      </Stack>
+    </Stack>
+    </Container>
   );
 };
 

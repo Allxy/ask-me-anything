@@ -10,7 +10,7 @@ export const signIn: ActionFunction = async ({ request }) => {
     return logInResponse.data;
   } catch (error: any) {
     if (error.code !== 'ERR_NETWORK') {
-      return error.response.data;
+      return null;
     }
     throw error;
   }
@@ -32,7 +32,7 @@ export const signUp: ActionFunction = async ({ request }) => {
 export const sendQuestion: ActionFunction = async ({ request, params }) => {
   try {
     const data = await AMAApi.getDataFromFromRequest(request);
-    data.anonim = data.anonim === 'on';
+    data.anonim = Boolean(data.anonim);
     data.owner = params.userID;
     const response = await AMAApi.postQuestion(data);
     return response.data;

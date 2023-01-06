@@ -2,9 +2,10 @@ import { useEffect } from 'react';
 import { useFetcher } from 'react-router-dom';
 import { IUser } from '../../models/User';
 import AuthContainer from '../containers/AuthContainer';
-import useForm from '../hooks/useForm';
-import useUser from '../hooks/useUser';
-import InputWithError from '../ui/InputWithError';
+import useForm from '../../hooks/useForm';
+import useUser from '../../hooks/useUser';
+import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip } from '@chakra-ui/react';
+import { EmailIcon, LockIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
 
 const initialValues = {
   email: '',
@@ -12,39 +13,66 @@ const initialValues = {
 };
 
 const LoginPage: React.FC = () => {
-  const fetcher = useFetcher<IUser>();
+  const fetcher = useFetcher<IUser | null>();
   const { setUser } = useUser();
   const { values, errors, isValid, onChange } = useForm(initialValues);
 
   useEffect(() => {
-    if ((fetcher.data?.login) !== undefined) {
-      setUser(fetcher.data ?? null);
+    if (fetcher.state === 'idle') {
+      if (fetcher.data?.login !== undefined) {
+        setUser(fetcher.data);
+      }
     }
   }, [fetcher, setUser]);
 
   return (
     <AuthContainer
-      title="Sign In"
+      title='Sign In'
       fetcher={fetcher}
-      className="login__auth"
       action='/sign-in'
-      buttonText="Sign In"
+      buttonText='Sign In'
       isValid={isValid}
-      link="/sign-up"
-      linkTitle="You have no account? Sign Up!"
+      link='/sign-up'
+      linkTitle='You have no account? Sign Up!'
     >
-        {Object.keys(values).map((key) =>
-          <InputWithError
-            key={key}
-            type={key}
-            name={key}
+      <Tooltip label={errors.email}>
+        <InputGroup>
+          <InputLeftElement children={<EmailIcon />} />
+          <Input
+            type='email'
+            name='email'
             required
-            placeholder={key.substring(0, 1).toUpperCase() + key.substring(1)}
-            value={values[key as keyof typeof values]}
-            error={errors[key as keyof typeof errors]}
+            placeholder='Email'
+            value={values.email}
             onChange={onChange}
           />
-        )}
+          <InputRightElement>
+            {errors.email === '' && <CheckIcon color='green.500'></CheckIcon>}
+            {errors.email !== undefined && errors.email.length > 0 && <CloseIcon color='red.500'></CloseIcon>}
+          </InputRightElement>
+        </InputGroup>
+      </Tooltip>
+
+      <Tooltip label={errors.password}>
+        <InputGroup>
+          <InputLeftElement children={<LockIcon />} />
+          <Input
+            type='password'
+            name='password'
+            required
+            placeholder='Password'
+            value={values.password}
+            onChange={onChange}
+            isInvalid={Boolean(errors.password)}
+          />
+          <InputRightElement>
+            {errors.password === '' && <CheckIcon color='green.500'></CheckIcon>}
+            {errors.password !== undefined && errors.password.length > 0 &&
+                <CloseIcon color='red.500' ></CloseIcon>
+              }
+          </InputRightElement>
+        </InputGroup>
+      </Tooltip>
     </AuthContainer>
   );
 };

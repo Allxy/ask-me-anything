@@ -1,4 +1,3 @@
-import classNames from 'classnames';
 import { useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { IUser } from '../../models/User';
@@ -24,8 +23,7 @@ function Search ({ className, isLoading, value, onChange, error, result }: Searc
   const showResult = result !== undefined && (result.length > 0);
 
   return (
-    <div className={classNames('search',
-      className)}
+    <div
     >
       <span onClick={handleSearchClick} className='search__icon' />
       <input
@@ -34,13 +32,7 @@ function Search ({ className, isLoading, value, onChange, error, result }: Searc
         className='search__input'
         onChange={(e) => onChange(e.target.value)}
       />
-      <div
-      className={classNames(
-        'search__result',
-        showStatus && 'search__result_active',
-        showResult && showStatus && 'search__result_show'
-      )
-      }>
+      <div>
         <p className='search__status'>
           {!isLoading ? (!showResult && 'No Results') : 'Loading...'}
         </p>

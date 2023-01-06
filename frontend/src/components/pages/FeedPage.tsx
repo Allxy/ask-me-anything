@@ -1,19 +1,20 @@
 import { useEffect, useState } from 'react';
-import { useFetcher } from 'react-router-dom';
+import { useFetcher, useLoaderData } from 'react-router-dom';
 import { IQuestion } from '../../models/Question';
-import QuestionsContainer from '../containers/QuestionsContainer';
-import useOnScreen from '../hooks/useOnScreen';
-import './FeedPage.css';
+import useOnScreen from '../../hooks/useOnScreen';
+import { Container, Heading, Stack } from '@chakra-ui/react';
+import Answer from '../presentation/Answer';
 
 const FeedPage: React.FC = (props) => {
   const fetcher = useFetcher();
-  const [answers, setAnswers] = useState<IQuestion[]>([]);
+  const data = useLoaderData() as IQuestion[];
+  const [answers, setAnswers] = useState<IQuestion[]>(data);
   const [isOnScreen, markerRef] = useOnScreen<HTMLDivElement>('300px');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(2);
   const [isEnded, setIsEnded] = useState(false);
 
   useEffect(() => {
-    if (isOnScreen) {
+    if (isOnScreen && !isEnded) {
       fetcher.load(`/?page=${page}`);
       setPage(page + 1);
     }
@@ -28,11 +29,20 @@ const FeedPage: React.FC = (props) => {
     }
   }, [fetcher]);
 
-  return <div className='feed'>
-    <QuestionsContainer questions={answers} title="Feed" />
-    { isEnded && <div className='feed_nomore'>No more :)</div>}
-    <div ref={markerRef}></div>
-  </div>;
+  return (
+    <Container maxW='container.md'>
+      <Stack as='section' spacing='4'>
+        <Heading as='h2' >Feed</Heading>
+        {
+          answers.length > 0
+            ? answers.map((q: IQuestion) => <Answer key={q._id} question={q} />)
+            : <p>There's nothing here</p>
+        }
+      </Stack>
+      { isEnded && <div>No more :)</div>}
+      <div ref={markerRef}></div>
+    </Container>
+  );
 };
 
 export default FeedPage;

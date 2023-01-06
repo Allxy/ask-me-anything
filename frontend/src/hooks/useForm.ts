@@ -4,9 +4,8 @@ interface UseFormProps<T> {
   values: T
   errors: { [K in keyof T]?: string | undefined }
   isValid: boolean
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-  resetForm: (values: T) => void
-  setCustomError: (key: keyof T, value: string | undefined) => void
+  onChange: (e: React.ChangeEvent<any>) => void
+  resetForm: (values?: T) => void
 }
 
 const useForm = <T>(initialValues: T): UseFormProps<T> => {
@@ -19,23 +18,18 @@ const useForm = <T>(initialValues: T): UseFormProps<T> => {
 
     setValues({ ...values, [name]: value });
     // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    setErrors({ ...errors, [name]: validationMessage || undefined });
+    setErrors({ ...errors, [name]: validationMessage || '' });
     setValid(target.closest('form')?.checkValidity() ?? false);
   };
 
-  const setCustomError = useCallback((key: keyof typeof errors, value: string | undefined) => {
-    setErrors({ ...errors, [key]: value });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [errors]);
-
-  const resetForm = useCallback((newValues: T) => {
+  const resetForm = useCallback((newValues: T = initialValues) => {
     setValues({ ...initialValues, ...newValues });
     setErrors({});
     setValid(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { values, errors, isValid, onChange, resetForm, setCustomError };
+  return { values, errors, isValid, onChange, resetForm };
 };
 
 export default useForm;

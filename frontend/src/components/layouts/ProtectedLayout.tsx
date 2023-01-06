@@ -1,8 +1,9 @@
-import * as React from 'react';
+import { memo } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { ERole } from '../../models/User';
+import useUser from '../../hooks/useUser';
 import Header from '../Header';
-import useUser from '../hooks/useUser';
+import { Box, useMediaQuery } from '@chakra-ui/react';
 
 interface ProtectedLayoutProps {
   roles: ERole[]
@@ -10,9 +11,10 @@ interface ProtectedLayoutProps {
 
 const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ roles }) => {
   const { user } = useUser();
+  const [isDesktop] = useMediaQuery('only screen and (min-device-width: 768px)');
 
   if (user === null) {
-    return <Navigate to="/sign-in" />;
+    return <Navigate to='/sign-in' />;
   }
 
   if (!(roles.includes(user?.role))) {
@@ -21,10 +23,12 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ roles }) => {
 
   return (
     <>
-      <Header />
-      <Outlet />
+      {isDesktop && <Header />}
+      <Box mt='14' pt='4'>
+        <Outlet />
+      </Box>
     </>
   );
 };
 
-export default React.memo(ProtectedLayout);
+export default memo(ProtectedLayout);

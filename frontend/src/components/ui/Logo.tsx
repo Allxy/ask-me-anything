@@ -1,17 +1,18 @@
-import classNames from 'classnames';
+import { Image, Link, useColorModeValue } from '@chakra-ui/react';
 import React from 'react';
-import { Link } from 'react-router-dom';
-import './Logo.css';
+import { Link as RouterLink } from 'react-router-dom';
+import logo from '../../images/logo.png';
+import logoDark from '../../images/logo_dark.png';
 
 interface LogoProps {
-  className?: string
-  link: string
+  link?: string
+  size: number
 }
 
-const Logo: React.FC<LogoProps> = ({ className, link }) => {
+const Logo: React.FC<LogoProps> = ({ link, size }) => {
   return (
-    <Link to={link} className={classNames(className, 'logo')}>
-      Ask Me Anything
+    <Link as={RouterLink} to={link ?? '/'}>
+      <Image w={size} src={useColorModeValue(logoDark, logo)}></Image>
     </Link>
   );
 };

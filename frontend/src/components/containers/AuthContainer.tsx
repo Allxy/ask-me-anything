@@ -1,10 +1,7 @@
-import classNames from 'classnames';
+import { Box, Button, Container, Heading, Link, Stack, Text, VStack } from '@chakra-ui/react';
 import { ReactNode } from 'react';
-import { Link, FetcherWithComponents } from 'react-router-dom';
-import Button from '../ui/Button';
+import { Link as RouterLink, FetcherWithComponents } from 'react-router-dom';
 import Logo from '../ui/Logo';
-import Spinner from '../ui/Spinner';
-import './AuthContainer.css';
 
 interface AuthContainerProps {
   children: ReactNode
@@ -20,19 +17,50 @@ interface AuthContainerProps {
 
 const AuthContainer: React.FC<AuthContainerProps> = ({ fetcher, ...props }) => {
   return (
-    <div className={classNames('auth', props.className)}>
-      <Logo link="/sign-in" />
-
-      <p className='auth__title'>{props.title}</p>
-      <fetcher.Form noValidate className='auth__form' action={props.action} method="post" >
-        {props.children}
-        <p className='auth__error'>{Boolean(fetcher.data?.message) && fetcher.data?.message} </p>
-        <Button disabled={!props.isValid || fetcher.state !== 'idle'} type="submit">
-          {fetcher.state === 'idle' ? props.buttonText : <Spinner className="auth__spinner" />}
-        </Button>
-        <Link className='auth__link' to={props.link}>{props.linkTitle}</Link>
-      </fetcher.Form>
-    </div>
+    <Container
+      maxW='lg'
+      py={{ base: '12', md: '24' }}
+      px={{ base: '0', sm: '8' }}
+    >
+      <VStack mb='8' >
+        <Box as={Logo} size={32} link='/sign-in' />
+      </VStack>
+      <VStack
+        borderRadius='md'
+        p={8}
+        boxShadow='lg'
+        bg='gray.100'
+        _dark={{ bg: 'gray.700' }}
+      >
+        <Heading mb='2'>{props.title}</Heading>
+        <Stack
+          spacing={3}
+          as={fetcher.Form}
+          maxW='96' width='100%'
+          noValidate action={props.action}
+          method='post'
+        >
+          {props.children}
+          <Text
+            align='center'
+            color='red.500'
+            minH={8}
+            visibility={fetcher.data === null ? 'visible' : 'hidden'}
+          >
+            Bad credentials
+          </Text>
+          <Button
+            colorScheme='facebook'
+            disabled={!props.isValid || fetcher.state !== 'idle'}
+            type='submit'
+            isLoading={fetcher.state !== 'idle'}
+          >
+            {props.buttonText}
+          </Button>
+        </Stack>
+        <Link as={RouterLink} to={props.link}>{props.linkTitle}</Link>
+      </VStack>
+    </Container>
   );
 };
 

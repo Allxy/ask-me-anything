@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
-import useUser from '../hooks/useUser';
+import useUser from '../../hooks/useUser';
 
 const SignOutPage: React.FC = () => {
   const { setUser } = useUser();
@@ -9,7 +9,7 @@ const SignOutPage: React.FC = () => {
     setUser(null);
   }, [setUser]);
 
-  return <Navigate to="/sign-in" />;
+  return <Navigate to='/sign-in' />;
 };
 
 export default SignOutPage;

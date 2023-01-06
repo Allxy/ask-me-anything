@@ -17,6 +17,7 @@ module.exports = {
   },
   rules: {
     semi: ['error', 'always'],
-    '@typescript-eslint/semi': ['error', 'always']
+    '@typescript-eslint/semi': ['error', 'always'],
+    'jsx-quotes': ['error', 'prefer-single']
   }
 };

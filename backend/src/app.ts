@@ -6,6 +6,14 @@ import authorizationChecker from './checkers/authorization';
 import currentUserChecker from './checkers/user';
 import { MONGODB_URL, PORT } from './utils/constants';
 import logger from './utils/logger';
+import { AuthErrorHandler } from './middlewares/AuthErrorHandler';
+import { DefaultErrorHandler } from './middlewares/DefaultErrorHandler';
+import { HttpErrorHandler } from './middlewares/HttpErrorHandler';
+import { LoggerMiddleware } from './middlewares/LoggerMidleware';
+import { UsersController } from './controllers/UsersController';
+import { AuthController } from './controllers/AuthController';
+import { QuestionController } from './controllers/QuestionController';
+import { AnswersController } from './controllers/AnswersConstoller';
 
 logger.level = process.env.LOG_LEVEL ?? 'error';
 
@@ -14,16 +22,19 @@ async function start (): Promise<void> {
   await mongoose.connect(MONGODB_URL);
   logger.info('Success connection with DB');
 
+  console.log(path.join(__dirname, '/controllers/**/*.ts'));
+
   const app = createExpressServer({
     cors: true,
-    middlewares: [path.join(__dirname, '/middlewares/**/*.ts'), path.join(__dirname, '/middlewares/**/*.js')],
-    controllers: [path.join(__dirname, '/controllers/**/*.ts'), path.join(__dirname, '/controllers/**/*.js')],
-    interceptors: [path.join(__dirname, '/interceptors/**/*.ts'), path.join(__dirname, '/interceptors/**/*.js')],
+    middlewares: [AuthErrorHandler, DefaultErrorHandler, HttpErrorHandler, LoggerMiddleware],
+    controllers: [UsersController, AuthController, QuestionController, AnswersController],
+    interceptors: [path.join(__dirname, '/interceptors/**/*.ts')],
     authorizationChecker,
     currentUserChecker,
     defaultErrorHandler: false,
     validation: true
   });
+
   app.listen(PORT, () => logger.info(`Running on port ${PORT}`));
 }
 
