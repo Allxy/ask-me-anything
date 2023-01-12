@@ -1,11 +1,11 @@
 import { HydratedDocument } from 'mongoose';
-import { Body, CurrentUser, Get, JsonController, Param, Post } from 'routing-controllers';
+import { Body, CurrentUser, Delete, Get, JsonController, NotFoundError, Param, Post } from 'routing-controllers';
 import { findUser } from '../database/finders';
 import { IQuestion, QuestionModel } from '../database/models/QuestionModel';
 import { IUser } from '../database/models/UserModel';
-import { idTransform } from '../database/transforms';
+import { QUESTION_NOT_FOUND } from '../utils/constants';
 
-@JsonController('/questions')
+@JsonController('/questions', { transformResponse: false })
 export class QuestionController {
   @Get('/me')
   private async getQuestionsForMe (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
@@ -18,15 +18,29 @@ export class QuestionController {
     return questions
       .map((question) =>
         question.toObject({
-          versionKey: false,
-          transform: (doc, res) => {
+          transform: (doc, ret) => {
             if (doc.anonim === true) {
-              res.author = undefined;
+              delete ret.author;
             }
-            return idTransform(doc, res);
           }
         })
       );
+  };
+
+  @Delete('/:id')
+  private async deleteQuestion (@CurrentUser() user: HydratedDocument<IUser>, @Param('id') id: string): Promise<any> {
+    const questions = await QuestionModel
+      .findOne({ _id: id, answer: { $exists: false } }).exec();
+
+    if (questions === null) throw new NotFoundError(QUESTION_NOT_FOUND);
+
+    return questions.toObject({
+      transform: (doc, ret) => {
+        if (doc.anonim === true) {
+          delete ret.author;
+        }
+      }
+    });
   };
 
   @Get('/:author')
@@ -38,12 +52,7 @@ export class QuestionController {
       .populate('owner author')
       .exec();
 
-    return questions.map((question) =>
-      question.toObject({
-        versionKey: false,
-        transform: idTransform
-      })
-    );
+    return questions;
   };
 
   @Post()
@@ -52,7 +61,6 @@ export class QuestionController {
 
     const question = new QuestionModel({ author: user.id, owner: ownerDoc.id, anonim, text });
     await question.save();
-    const pop = await question.populate('owner author');
-    return pop.toObject({ versionKey: false, transform: idTransform });
+    return await question.populate('owner author');
   };
 }

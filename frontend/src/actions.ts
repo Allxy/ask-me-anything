@@ -10,7 +10,7 @@ export const signIn: ActionFunction = async ({ request }) => {
     return logInResponse.data;
   } catch (error: any) {
     if (error.code !== 'ERR_NETWORK') {
-      return null;
+      return error.response.data;
     }
     throw error;
   }

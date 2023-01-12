@@ -71,6 +71,14 @@ export class AMAApi {
   public async postAnswer (data: any): Promise<AxiosResponse<IQuestion>> {
     return await this.axios.post('/answers', data);
   }
+
+  public async putAnswerLike (id: string): Promise<AxiosResponse<IQuestion>> {
+    return await this.axios.put(`/answers/${id}/like`);
+  }
+
+  public async deleteAnswerDislike (id: string): Promise<AxiosResponse<IQuestion>> {
+    return await this.axios.delete(`/answers/${id}/like`);
+  }
 }
 
 export default new AMAApi(process.env.REACT_APP_API_BASEURL ?? '', 'token');

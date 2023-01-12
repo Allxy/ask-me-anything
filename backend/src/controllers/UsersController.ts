@@ -7,7 +7,6 @@ import {
 } from 'routing-controllers';
 import logger from '../utils/logger';
 import { IUser, UserModel } from '../database/models/UserModel';
-import { idTransform } from '../database/transforms';
 import { FilterQuery, HydratedDocument } from 'mongoose';
 import { findUser } from '../database/finders';
 
@@ -15,11 +14,7 @@ import { findUser } from '../database/finders';
 export class UsersController {
   @Get('/me')
   private async getUserMe (@CurrentUser() user: HydratedDocument<IUser>): Promise<any> {
-    return user.toObject(
-      {
-        versionKey: false,
-        transform: idTransform
-      });
+    return user;
   }
 
   @Patch('/me')
@@ -39,10 +34,7 @@ export class UsersController {
     }
 
     if (updated !== undefined && updated !== null) {
-      return await updated.toObject({
-        versionKey: false,
-        transform: idTransform
-      });
+      return updated;
     }
 
     throw new BadRequestError('User not found');

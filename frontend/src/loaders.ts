@@ -74,3 +74,29 @@ export const signOutLoader: LoaderFunction = () => {
   AMAApi.removeToken();
   return null;
 };
+
+export const likeLoader: LoaderFunction = async ({ params }) => {
+  try {
+    const response = await AMAApi.putAnswerLike(params.answerId ?? '');
+    console.log(response.data, 123);
+
+    return response.data;
+  } catch (error: any) {
+    if (error.code !== 'ERR_NETWORK') {
+      return error.response.data;
+    }
+    throw error;
+  }
+};
+
+export const dislikeLoader: LoaderFunction = async ({ params }) => {
+  try {
+    const response = await AMAApi.deleteAnswerDislike(params.answerId ?? '');
+    return response.data;
+  } catch (error: any) {
+    if (error.code !== 'ERR_NETWORK') {
+      return error.response.data;
+    }
+    throw error;
+  }
+};

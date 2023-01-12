@@ -15,10 +15,8 @@ const useForm = <T>(initialValues: T): UseFormProps<T> => {
 
   const onChange = ({ target }: React.ChangeEvent<HTMLInputElement>): void => {
     const { value, name, validationMessage } = target;
-
     setValues({ ...values, [name]: value });
-    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-    setErrors({ ...errors, [name]: validationMessage || '' });
+    setErrors({ ...errors, [name]: validationMessage ?? '' });
     setValid(target.closest('form')?.checkValidity() ?? false);
   };
 

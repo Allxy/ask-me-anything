@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { createBrowserRouter, createRoutesFromElements, defer, Route, RouterProvider } from 'react-router-dom';
-import { signIn, signUp, sendQuestion, sendAnswer } from '../actions';
-import { answersLoader, questionsLoader, searchLoader, signOutLoader, tokenLoader, userLoader } from '../loaders';
+import { sendAnswer, sendQuestion, signIn, signUp } from '../actions';
+import { answersLoader, dislikeLoader, likeLoader, questionsLoader, searchLoader, signOutLoader, tokenLoader, userLoader } from '../loaders';
 import { allRoles } from '../models/User';
 import { AuthLayout, ProtectedLayout, UserLayout } from './layouts';
 import { ErrorPage, FeedPage, LoginPage, ProfilePage, RegisterPage, SignOutPage } from './pages';
@@ -20,6 +20,10 @@ const router = createBrowserRouter(
       </Route>
 
       <Route element={<ProtectedLayout roles={allRoles} />} >
+        <Route path='answer/:answerId'>
+          <Route path='like' loader={likeLoader}></Route>
+          <Route path='dislike' loader={dislikeLoader}></Route>
+        </Route>
         <Route path='search' loader={searchLoader} />
         <Route path='/' element={<FeedPage />} loader={answersLoader} />
         <Route

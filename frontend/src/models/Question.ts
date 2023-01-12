@@ -6,6 +6,7 @@ export interface IQuestion {
   owner?: IUser
   author?: IUser
   answer?: string
+  likes: IUser[]
   createdAt: string
   updatedAt: string
 }

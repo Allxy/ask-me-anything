@@ -2,28 +2,28 @@ import bcrypt from 'bcrypt';
 import { Response } from 'express';
 import jwt from 'jsonwebtoken';
 import {
-  BadRequestError, Body, InternalServerError, JsonController,
+  BadRequestError, Body, JsonController,
   Post, Res
 } from 'routing-controllers';
 import { IUser, UserModel } from '../database/models/UserModel';
-import { idTransform } from '../database/transforms';
+import { AUTH_ERROR, JWT_SECRET } from '../utils/constants';
 
-@JsonController('')
+@JsonController('', { transformResponse: false })
 export class AuthController {
   @Post('/signin')
   private async login (@Body() { email, password }: IUser, @Res() res: Response): Promise<any> {
     const find = await UserModel.findOne({ email: email.toLowerCase() }).select('+password').exec();
 
     if (find == null) {
-      throw new BadRequestError('User not found');
+      throw new BadRequestError(AUTH_ERROR);
     }
 
     const match = await bcrypt.compare(password, String(find?.password));
     if (!match) {
-      throw new BadRequestError('Wrong password');
+      throw new BadRequestError(AUTH_ERROR);
     }
 
-    const token = jwt.sign({ id: find.id, role: find.role }, process.env.JWT_SECRET ?? 'secret', { expiresIn: '10d' });
+    const token = jwt.sign({ id: find.id, role: find.role }, JWT_SECRET, { expiresIn: '10d' });
 
     return { token };
   }
@@ -36,22 +36,11 @@ export class AuthController {
       throw new BadRequestError(`User is already exists with this ${email === find.email ? 'email' : 'login'}`);
     }
 
-    const User = new UserModel({ name, email, password, role: 'user', login });
-    try {
-      await User.validate();
-      User.password = await bcrypt.hash(User.password, 10);
-      await User.save();
-    } catch (error: any) {
-      throw new BadRequestError(error.message);
-    }
+    const hashedPass = await bcrypt.hash(password, 10);
+    const user = new UserModel({ name, email, password: hashedPass, role: 'user', login });
+    await user.validate();
+    await user.save();
 
-    const createdUser = await UserModel.findOne({ email }).exec();
-    if (createdUser === undefined) {
-      throw new InternalServerError('Something went wrong, user not created');
-    }
-    return createdUser?.toJSON({
-      versionKey: false,
-      transform: idTransform
-    });
+    return user;
   }
 }

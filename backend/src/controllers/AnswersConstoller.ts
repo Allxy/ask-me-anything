@@ -1,10 +1,9 @@
 import { HydratedDocument, isValidObjectId } from 'mongoose';
-import { Authorized, BadRequestError, Body, CurrentUser, Get, JsonController, Param, Post, QueryParam } from 'routing-controllers';
+import { Authorized, BadRequestError, Body, CurrentUser, Delete, Get, JsonController, Param, Post, Put, QueryParam } from 'routing-controllers';
 import { IQuestion, QuestionModel } from '../database/models/QuestionModel';
 import { IUser, UserModel } from '../database/models/UserModel';
-import { idTransform } from '../database/transforms';
 
-@JsonController('/answers')
+@JsonController('/answers', { transformResponse: false })
 export class AnswersController {
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get()
@@ -17,21 +16,13 @@ export class AnswersController {
       .sort({ updatedAt: -1 })
       .limit(limit)
       .skip(limit * (page - 1))
-      .populate('author owner')
-      .exec();
+      .populate('author owner likes');
 
-    return answers
-      .map((answer) =>
-        answer.toObject({
-          versionKey: false,
-          transform: (doc, res) => {
-            if (doc.anonim === true) {
-              res.author = undefined;
-            }
-            return idTransform(doc, res);
-          }
-        })
-      );
+    return answers.map(answer => answer.toObject({
+      transform: (doc, ret) => {
+        if (doc.anonim === true) { delete ret.author; };
+      }
+    }));
   }
 
   @Authorized(['user', 'admin', 'moder', 'vip'])
@@ -51,18 +42,15 @@ export class AnswersController {
     const answers = await QuestionModel
       .find({ owner: findUser.id, answer: { $exists: true } })
       .sort({ updatedAt: -1 })
-      .populate('author owner')
-      .exec();
+      .populate('author owner likes');
 
     return answers
       .map((answer) =>
         answer.toObject({
-          versionKey: false,
-          transform: (doc, res) => {
+          transform: (doc, ret) => {
             if (doc.anonim === true) {
-              res.author = undefined;
+              delete ret.author;
             }
-            return idTransform(doc, res);
           }
         })
       );
@@ -85,15 +73,51 @@ export class AnswersController {
     let answerDoc;
     try {
       answerDoc = await QuestionModel
-        .findByIdAndUpdate(question, { answer }, { new: true, runValidators: true })
-        .exec();
+        .findByIdAndUpdate(question, { answer }, { new: true, runValidators: true });
     } catch (error: any) {
       throw new BadRequestError(error.message);
     }
 
-    return answerDoc?.toObject({
-      versionKey: false,
-      transform: idTransform
+    return answerDoc;
+  };
+
+  @Put('/:answerId/like')
+  private async putAnswerLike (
+    @CurrentUser() user: HydratedDocument<IUser>, @Param('answerId') id: string): Promise<any> {
+    const answerDoc = await QuestionModel
+      .findByIdAndUpdate(id, { $addToSet: { likes: user._id } }, { timestamps: false, new: true })
+      .populate('owner author likes');
+
+    if (answerDoc === null) {
+      throw new BadRequestError('Answer not found');
+    }
+
+    return answerDoc.toObject({
+      transform: (doc, ret) => {
+        if (doc.anonim === true) {
+          delete ret.author;
+        }
+      }
+    });
+  };
+
+  @Delete('/:answerId/like')
+  private async deleteAnswerLike (
+    @CurrentUser() user: HydratedDocument<IUser>, @Param('answerId') id: string): Promise<any> {
+    const answerDoc = await QuestionModel
+      .findByIdAndUpdate(id, { $pull: { likes: user._id } }, { timestamps: false, new: true })
+      .populate('owner author likes');
+
+    if (answerDoc === null) {
+      throw new BadRequestError('Answer not found');
+    }
+
+    return answerDoc.toObject({
+      transform: (doc, ret) => {
+        if (doc.anonim === true) {
+          delete ret.author;
+        }
+      }
     });
   };
 }

@@ -4,6 +4,7 @@ import { ERole } from '../../models/User';
 import useUser from '../../hooks/useUser';
 import Header from '../Header';
 import { Box, useMediaQuery } from '@chakra-ui/react';
+import Toolbar from '../Toolbar';
 
 interface ProtectedLayoutProps {
   roles: ERole[]
@@ -23,8 +24,12 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ roles }) => {
 
   return (
     <>
-      {isDesktop && <Header />}
-      <Box mt='14' pt='4'>
+      {isDesktop ? <Header /> : <Toolbar />}
+      <Box
+        mt={isDesktop ? '14' : '0'}
+        pb={isDesktop ? '0' : '20'}
+        pt='4'
+      >
         <Outlet />
       </Box>
     </>

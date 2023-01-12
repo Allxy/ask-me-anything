@@ -1,6 +1,4 @@
-import { useEffect, useState } from 'react';
-import { Link as RouterLink, useFetcher } from 'react-router-dom';
-import useDebounce from '../hooks/useDebounce';
+import { Link as RouterLink } from 'react-router-dom';
 import useUser from '../hooks/useUser';
 import { Avatar, Box, Button, Container, Flex, HStack, Image, Link, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import logo from '../images/logo.png';
@@ -8,29 +6,24 @@ import logoDark from '../images/logo_dark.png';
 import { EmailIcon, ChevronDownIcon, ChevronUpIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
 
 function Header (): JSX.Element {
-  const { data, state, load } = useFetcher();
   const { user } = useUser();
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, isPending] = useDebounce(search, 500);
   const { toggleColorMode, colorMode } = useColorMode();
-
-  useEffect(() => {
-    if (search !== '') {
-      load('/search?limit=10&page=1&login=' + debouncedSearch);
-    }
-  }, [debouncedSearch]);
 
   return (
     <Box
       as='header'
       h='14'
-      bgColor={useColorModeValue('white', 'gray.900')}
-      boxShadow={useColorModeValue('sm', 'dark-sm')}
+      bgColor={'white'}
+      boxShadow={'sm'}
       pos='fixed'
       top='0'
       left='0'
       right='0'
       zIndex='sticky'
+      _dark={{
+        bgColor: 'gray.900',
+        boxShadow: 'dark-sm'
+      }}
     >
       <Container
         maxW='container.md'

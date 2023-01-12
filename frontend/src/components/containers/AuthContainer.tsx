@@ -45,9 +45,9 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ fetcher, ...props }) => {
             align='center'
             color='red.500'
             minH={8}
-            visibility={fetcher.data === null ? 'visible' : 'hidden'}
+            visibility={fetcher.data?.message !== undefined ? 'visible' : 'hidden'}
           >
-            Bad credentials
+            {fetcher.data?.message}
           </Text>
           <Button
             colorScheme='facebook'

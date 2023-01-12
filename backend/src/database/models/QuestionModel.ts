@@ -1,4 +1,4 @@
-import mongoose, { Model, RefType, Schema } from 'mongoose';
+import mongoose, { Model, ObjectId, RefType, Schema, Types } from 'mongoose';
 
 export interface IQuestion {
   author: RefType
@@ -6,6 +6,7 @@ export interface IQuestion {
   text: String
   anonim: Boolean
   answer?: String
+  likes: ObjectId[]
 }
 
 export interface QuestionModelType extends Model<IQuestion> {
@@ -39,6 +40,12 @@ const questionSchema = new mongoose.Schema<IQuestion, QuestionModelType>({
     type: String,
     minlength: [5, 'must be at least 5'],
     maxlength: [400, 'should be no more than 400']
+  },
+  likes: {
+    type: [Types.ObjectId],
+    select: false,
+    ref: 'User',
+    default: []
   }
 }, { timestamps: true });
 

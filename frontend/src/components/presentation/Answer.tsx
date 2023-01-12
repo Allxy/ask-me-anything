@@ -1,14 +1,20 @@
-import { Avatar, Box, Heading, HStack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Avatar, Box, Button, Divider, Heading, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { MouseEventHandler } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useFetcher } from 'react-router-dom';
 import { IQuestion } from '../../models/Question';
+import { LikeActiveIcon } from '../ui/icons/LikeActiveIcon';
+import { LikeIcon } from '../ui/icons/LikeIcon';
 
 interface QuestionProps {
   question: IQuestion
+  isLiked: boolean
+  onLike: (isLiked: boolean) => void
   onClick?: MouseEventHandler
 }
 
-const Answer: React.FC<QuestionProps> = ({ question, onClick }) => {
+const Answer: React.FC<QuestionProps> = ({ question, onClick, onLike, isLiked }) => {
+  const fetcher = useFetcher();
+
   return (
     <Box
       as='article'
@@ -35,11 +41,27 @@ const Answer: React.FC<QuestionProps> = ({ question, onClick }) => {
           </HStack>
         }
       </Box>
-      {question.updatedAt !== undefined &&
-        <Text fontSize='xs' color='gray'>
-          {new Date(question.updatedAt).toLocaleString()}
-        </Text>}
-      {question.answer !== undefined && <div>{question.answer}</div>}
+      <HStack alignItems='center' my='4'>
+        <Avatar
+          as={RouterLink}
+          size='md'
+          name={question.owner?.name}
+          to={`/user/${question.owner?.login ?? ''}`}
+        />
+        <Box>
+          <Text as={RouterLink} fontWeight='bold' to={`/user/${question.owner?.login ?? ''}`}>
+            {question.owner?.name}
+          </Text>
+          <Text fontSize='sm' color='gray'>{new Date(question.updatedAt).toLocaleString()}</Text>
+        </Box>
+      </HStack>
+      <Text>{question.answer}</Text>
+      <Divider my='2'></Divider>
+      <HStack>
+        <Button rightIcon={isLiked ? <LikeActiveIcon /> : <LikeIcon />} onClick={() => onLike(isLiked)}>
+          {question.likes.length}
+        </Button>
+      </HStack>
     </Box>
   );
 };

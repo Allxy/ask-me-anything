@@ -1,6 +1,6 @@
-import { Avatar, Box, Button, Checkbox, Container, Flex, FormControl, FormErrorMessage, Heading, HStack, Stack, Switch, Text, Textarea, Tooltip } from '@chakra-ui/react';
+import { Avatar, Box, Button, Container, Flex, FormControl, Heading, HStack, Stack, Switch, Text, Textarea, Tooltip } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import { useFetcher } from 'react-router-dom';
+import { useFetcher, useLoaderData } from 'react-router-dom';
 import useForm from '../../hooks/useForm';
 import { useLoaderTypedData } from '../../hooks/useLoaderTypedData';
 import useUser from '../../hooks/useUser';
@@ -9,16 +9,26 @@ import Answer from '../presentation/Answer';
 
 const ProfilePage: React.FC = () => {
   const { user } = useUser();
-  const { currentUser } = useLoaderTypedData();
-  const { answers } = useLoaderTypedData();
-  const fetcher = useFetcher();
+  const { currentUser, answers } = useLoaderTypedData();
+  const [answersState, setAnswersState] = useState<IQuestion[]>(answers);
+  const askFetcher = useFetcher();
+  const likeFetcher = useFetcher();
   const { values, onChange, resetForm, errors, isValid } = useForm({ text: '' });
 
   useEffect(() => {
-    if (fetcher.data?.text !== undefined && fetcher.state === 'idle') {
+    if (askFetcher.state === 'idle' && askFetcher.data?.message === undefined) {
       resetForm();
     }
-  }, [fetcher]);
+  }, [askFetcher, resetForm]);
+
+  useEffect(() => {
+    if (likeFetcher.state === 'idle' && likeFetcher.data !== undefined) {
+      console.log(answers, likeFetcher.data);
+
+      const newAnswers = answers.map((answer: IQuestion) => answer._id === likeFetcher.data._id ? likeFetcher.data : answer);
+      setAnswersState(newAnswers);
+    }
+  }, [likeFetcher]);
 
   return (
     <Container maxW='container.md'>
@@ -41,7 +51,7 @@ const ProfilePage: React.FC = () => {
         <Heading as='h2' size='md' mb='4'>
           Ask {currentUser.login === user?.login ? 'yourself' : currentUser.login} about something interesting
         </Heading>
-        <FormControl as={fetcher.Form} action='ask' method='post'>
+        <FormControl as={askFetcher.Form} action='ask' method='post'>
           <Tooltip label={errors.text}>
             <Textarea
               value={values.text}
@@ -66,8 +76,16 @@ const ProfilePage: React.FC = () => {
       <Stack spacing='4'>
         <Heading as='h2' size='md' ml='4'>Answers</Heading>
         {
-          answers.length > 0
-            ? answers.map((q: IQuestion) => <Answer key={q._id} question={q} />)
+          answersState.length > 0
+            ? answersState.map((q: IQuestion) =>
+            <Answer
+              key={q._id}
+              question={q}
+              isLiked={q.likes.some((u) => u._id === user?._id)}
+              onLike={(isLiked) => {
+                likeFetcher.load(`/answer/${q._id}/${isLiked ? 'dislike' : 'like'}`);
+              }}
+            />)
             : <p>There's nothing here</p>
         }
       </Stack>
