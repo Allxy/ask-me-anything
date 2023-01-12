@@ -1,4 +1,4 @@
-import { createContext, Dispatch, SetStateAction, useContext, useState } from 'react';
+import { createContext, Dispatch, SetStateAction, useState } from 'react';
 import { IUser } from '../models/User';
 
 export interface UserContextType {

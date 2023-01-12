@@ -1,9 +1,9 @@
 import { Link as RouterLink } from 'react-router-dom';
 import useUser from '../hooks/useUser';
-import { Avatar, Box, Button, Container, Flex, HStack, Image, Link, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Avatar, Box, Button, Container, Flex, HStack, IconButton, Image, Link, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
 import logo from '../images/logo.png';
 import logoDark from '../images/logo_dark.png';
-import { EmailIcon, ChevronDownIcon, ChevronUpIcon, MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { EmailIcon, ChevronDownIcon, ChevronUpIcon, MoonIcon, SunIcon, SearchIcon } from '@chakra-ui/icons';
 
 function Header (): JSX.Element {
   const { user } = useUser();
@@ -41,11 +41,12 @@ function Header (): JSX.Element {
             alignItems='center'
             spacing='4'
           >
-            <Button as={RouterLink} to='income'><EmailIcon /></Button>
+            <IconButton aria-label='search' icon={<SearchIcon />} as={RouterLink} to='search' />
+            <IconButton aria-label='income' icon={<EmailIcon />} as={RouterLink} to='income' />
             <Menu placement='bottom-end'>
               {({ isOpen }) => (
                 <>
-                <MenuButton color='white' fontSize='lg'>
+                <MenuButton fontSize='lg'>
                   <Avatar size='sm' name={user?.name}/>
                   {isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 </MenuButton>

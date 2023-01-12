@@ -27,7 +27,11 @@ export class AnswersController {
 
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('/:owner')
-  private async getUserAnswers (@Param('owner') owner: string): Promise<any> {
+  private async getUserAnswers (
+    @Param('owner') owner: string,
+      @QueryParam('limit') limit: number = 10,
+      @QueryParam('page') page: number = 1
+  ): Promise<any> {
     let findUser;
     if (isValidObjectId(owner)) {
       findUser = await UserModel.findById(owner).exec();
@@ -42,6 +46,8 @@ export class AnswersController {
     const answers = await QuestionModel
       .find({ owner: findUser.id, answer: { $exists: true } })
       .sort({ updatedAt: -1 })
+      .limit(limit)
+      .skip(limit * (page - 1))
       .populate('author owner likes');
 
     return answers

@@ -78,8 +78,6 @@ export const signOutLoader: LoaderFunction = () => {
 export const likeLoader: LoaderFunction = async ({ params }) => {
   try {
     const response = await AMAApi.putAnswerLike(params.answerId ?? '');
-    console.log(response.data, 123);
-
     return response.data;
   } catch (error: any) {
     if (error.code !== 'ERR_NETWORK') {

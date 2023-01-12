@@ -31,6 +31,7 @@ export class AuthController {
   @Post('/signup')
   private async getUserMe (@Body() { name, email, password, login }: IUser): Promise<any> {
     email = email.toLowerCase();
+    login = login.toLowerCase();
     const find = await UserModel.findOne({ $or: [{ email }, { login }] }).select('+email').exec();
     if (find != null) {
       throw new BadRequestError(`User is already exists with this ${email === find.email ? 'email' : 'login'}`);

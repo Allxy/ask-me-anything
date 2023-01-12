@@ -1,18 +1,15 @@
 import { Avatar, Box, Button, Container, Flex, FormControl, Heading, HStack, Stack, Switch, Text, Textarea, Tooltip } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useFetcher, useLoaderData } from 'react-router-dom';
 import useForm from '../../hooks/useForm';
-import { useLoaderTypedData } from '../../hooks/useLoaderTypedData';
 import useUser from '../../hooks/useUser';
-import { IQuestion } from '../../models/Question';
-import Answer from '../presentation/Answer';
+import { IUser } from '../../models/User';
+import AnswersContainer from '../containers/AnswersContainer';
 
 const ProfilePage: React.FC = () => {
   const { user } = useUser();
-  const { currentUser, answers } = useLoaderTypedData();
-  const [answersState, setAnswersState] = useState<IQuestion[]>(answers);
+  const currentUser = useLoaderData() as IUser;
   const askFetcher = useFetcher();
-  const likeFetcher = useFetcher();
   const { values, onChange, resetForm, errors, isValid } = useForm({ text: '' });
 
   useEffect(() => {
@@ -21,20 +18,11 @@ const ProfilePage: React.FC = () => {
     }
   }, [askFetcher, resetForm]);
 
-  useEffect(() => {
-    if (likeFetcher.state === 'idle' && likeFetcher.data !== undefined) {
-      console.log(answers, likeFetcher.data);
-
-      const newAnswers = answers.map((answer: IQuestion) => answer._id === likeFetcher.data._id ? likeFetcher.data : answer);
-      setAnswersState(newAnswers);
-    }
-  }, [likeFetcher]);
-
   return (
     <Container maxW='container.md'>
     <Stack spacing='4'>
       <HStack spacing='4'>
-        <Avatar name={user?.name} size='xl' />
+        <Avatar name={currentUser.name} size='xl' />
         <Stack>
           <Text fontSize='xs'>@{currentUser.login}</Text>
           <Heading as='h1' size='xs'>{currentUser.name}</Heading>
@@ -72,23 +60,10 @@ const ProfilePage: React.FC = () => {
           </Flex>
         </FormControl>
       </Box>
-
-      <Stack spacing='4'>
-        <Heading as='h2' size='md' ml='4'>Answers</Heading>
-        {
-          answersState.length > 0
-            ? answersState.map((q: IQuestion) =>
-            <Answer
-              key={q._id}
-              question={q}
-              isLiked={q.likes.some((u) => u._id === user?._id)}
-              onLike={(isLiked) => {
-                likeFetcher.load(`/answer/${q._id}/${isLiked ? 'dislike' : 'like'}`);
-              }}
-            />)
-            : <p>There's nothing here</p>
-        }
-      </Stack>
+      <Box as='section'>
+        <Heading as='h2' size='md' ml='4' mb='2'>Answers</Heading>
+        <AnswersContainer loader={`/user/${currentUser.login}/answers`} />
+      </Box>
     </Stack>
     </Container>
   );

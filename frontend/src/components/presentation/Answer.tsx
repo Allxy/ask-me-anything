@@ -1,6 +1,6 @@
-import { Avatar, Box, Button, Divider, Heading, HStack, Text, useColorModeValue } from '@chakra-ui/react';
+import { Avatar, AvatarGroup, Box, Button, Divider, Heading, HStack, Text, useColorModeValue } from '@chakra-ui/react';
 import { MouseEventHandler } from 'react';
-import { Link as RouterLink, useFetcher } from 'react-router-dom';
+import { Link as RouterLink } from 'react-router-dom';
 import { IQuestion } from '../../models/Question';
 import { LikeActiveIcon } from '../ui/icons/LikeActiveIcon';
 import { LikeIcon } from '../ui/icons/LikeIcon';
@@ -10,11 +10,16 @@ interface QuestionProps {
   isLiked: boolean
   onLike: (isLiked: boolean) => void
   onClick?: MouseEventHandler
+  showOwner: boolean
 }
 
-const Answer: React.FC<QuestionProps> = ({ question, onClick, onLike, isLiked }) => {
-  const fetcher = useFetcher();
-
+const Answer: React.FC<QuestionProps> = ({
+  question,
+  onClick,
+  onLike,
+  isLiked,
+  showOwner = false
+}) => {
   return (
     <Box
       as='article'
@@ -41,7 +46,7 @@ const Answer: React.FC<QuestionProps> = ({ question, onClick, onLike, isLiked })
           </HStack>
         }
       </Box>
-      <HStack alignItems='center' my='4'>
+      {showOwner && <HStack alignItems='center' my='4'>
         <Avatar
           as={RouterLink}
           size='md'
@@ -54,13 +59,23 @@ const Answer: React.FC<QuestionProps> = ({ question, onClick, onLike, isLiked })
           </Text>
           <Text fontSize='sm' color='gray'>{new Date(question.updatedAt).toLocaleString()}</Text>
         </Box>
-      </HStack>
+      </HStack>}
       <Text>{question.answer}</Text>
       <Divider my='2'></Divider>
-      <HStack>
-        <Button rightIcon={isLiked ? <LikeActiveIcon /> : <LikeIcon />} onClick={() => onLike(isLiked)}>
+      <HStack justifyContent='space-between'>
+        <Button rightIcon={ isLiked ? <LikeActiveIcon color='red' /> : <LikeIcon color='red' />} onClick={() => {
+          onLike(isLiked);
+        }}>
           {question.likes.length}
         </Button>
+        {question.likes.length > 0 && <HStack>
+          <AvatarGroup max={2} size='sm'>
+            { question.likes.map((user) =>
+              <Avatar key={user._id} name={user.name} />)
+            }
+          </AvatarGroup>
+          <Text>likes</Text>
+        </HStack>}
       </HStack>
     </Box>
   );

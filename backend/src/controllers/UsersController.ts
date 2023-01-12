@@ -57,7 +57,7 @@ export class UsersController {
     logger.info('UserController:getUsers');
     const query: FilterQuery<IUser> = {};
     if (login !== undefined) {
-      query.login = { $regex: login };
+      query.login = { $regex: login.toLocaleLowerCase() };
     }
 
     const users = await UserModel.find(query)

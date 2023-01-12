@@ -37,6 +37,7 @@ const IncomePage: React.FC = () => {
             questions.map((q: IQuestion) => (
               <Income question={q} onClick={handleQuestionClick} />))
           }
+          {questions.length === 0 && <Text align='center'>You have no income questions.</Text>}
         </Stack>
       </Container>
 

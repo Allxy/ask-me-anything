@@ -6,6 +6,7 @@ import { allRoles } from '../models/User';
 import { AuthLayout, ProtectedLayout, UserLayout } from './layouts';
 import { ErrorPage, FeedPage, LoginPage, ProfilePage, RegisterPage, SignOutPage } from './pages';
 import IncomePage from './pages/IncomePage';
+import SearchPage from './pages/SearhPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -24,16 +25,16 @@ const router = createBrowserRouter(
           <Route path='like' loader={likeLoader}></Route>
           <Route path='dislike' loader={dislikeLoader}></Route>
         </Route>
-        <Route path='search' loader={searchLoader} />
-        <Route path='/' element={<FeedPage />} loader={answersLoader} />
+        <Route path='search' element={<SearchPage />} loader={searchLoader} />
+        <Route path='/' element={<FeedPage />} >
+          <Route path='answers' loader={answersLoader} />
+        </Route>
         <Route
           path='user/:userID'
           element={<ProfilePage />}
-          loader={async (args) => ({
-            currentUser: await userLoader(args),
-            answers: await answersLoader(args)
-          })}
+          loader={userLoader}
         >
+          <Route path='answers' loader={answersLoader} />
           <Route path='ask' action={sendQuestion} />
         </Route>
 
