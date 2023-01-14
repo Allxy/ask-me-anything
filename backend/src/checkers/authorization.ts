@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Action, ForbiddenError, UnauthorizedError } from 'routing-controllers';
 import { AuthorizationChecker } from 'routing-controllers/types/AuthorizationChecker';
-import { IRole } from '../database/models/UserModel';
+import { IRole } from '../models/UserModel';
 import { AUTH_REQUIRED, BAD_TOKEN_TYPE, NO_RIGHTS } from '../utils/constants';
 
 const authorizationChecker: AuthorizationChecker = (action: Action, roles: IRole[]) => {

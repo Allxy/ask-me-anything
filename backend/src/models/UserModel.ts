@@ -1,4 +1,5 @@
-import mongoose, { Model } from 'mongoose';
+import mongoose, { isValidObjectId, Model, RefType } from 'mongoose';
+import { BadRequestError } from 'routing-controllers';
 
 export type IRole = 'admin' | 'user' | 'moder';
 
@@ -10,10 +11,11 @@ export interface IUser {
   password: string
 }
 
-export interface UserModelType extends Model<IUser> {
+export interface IUserModel extends Model<IUser> {
+  findUserByIdOrLogin: (findValue: RefType) => any
 };
 
-const userSchema = new mongoose.Schema<IUser, UserModelType>({
+const userSchema = new mongoose.Schema<IUser, IUserModel>({
   name: {
     type: String,
     required: [true, 'is required'],
@@ -57,4 +59,20 @@ const userSchema = new mongoose.Schema<IUser, UserModelType>({
   }
 });
 
-export const UserModel = mongoose.model<IUser, UserModelType>('User', userSchema);
+userSchema.static('findUserByIdOrLogin', async function (findValue: RefType) {
+  let findUser = null;
+  if (isValidObjectId(findValue)) {
+    findUser = await this.findById(findValue);
+  } else if (typeof findValue === 'string') {
+    findUser = await this.findOne({ login: findValue.toLocaleLowerCase() });
+  }
+
+  if (findUser === null) {
+    throw new BadRequestError('User not found');
+  }
+  console.log(findUser);
+
+  return findUser;
+});
+
+export default mongoose.model<IUser, IUserModel>('User', userSchema);

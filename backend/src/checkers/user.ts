@@ -1,7 +1,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Action, ForbiddenError, UnauthorizedError } from 'routing-controllers';
 import { CurrentUserChecker } from 'routing-controllers/types/CurrentUserChecker';
-import { UserModel } from '../database/models/UserModel';
+import UserModel from '../models/UserModel';
 import { AUTH_REQUIRED, BAD_TOKEN_TYPE, USER_NOT_FOUND } from '../utils/constants';
 
 const currentUserChecker: CurrentUserChecker = async (action: Action) => {

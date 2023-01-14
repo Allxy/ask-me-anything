@@ -6,9 +6,8 @@ import {
   CurrentUser, Patch, Body, BadRequestError, Param
 } from 'routing-controllers';
 import logger from '../utils/logger';
-import { IUser, UserModel } from '../database/models/UserModel';
+import UserModel, { IUser } from '../models/UserModel';
 import { FilterQuery, HydratedDocument } from 'mongoose';
-import { findUser } from '../database/finders';
 
 @JsonController('/users', { transformResponse: false })
 export class UsersController {
@@ -43,7 +42,7 @@ export class UsersController {
   @Authorized(['user', 'admin', 'moder', 'vip'])
   @Get('/:user')
   private async getUser (@Param('user') user: string): Promise<any> {
-    const userDoc = await findUser(user);
+    const userDoc = await UserModel.findUserByIdOrLogin(user);
     return userDoc;
   }
 

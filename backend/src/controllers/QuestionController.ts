@@ -1,8 +1,7 @@
 import { HydratedDocument } from 'mongoose';
 import { Body, CurrentUser, Delete, Get, JsonController, NotFoundError, Param, Post } from 'routing-controllers';
-import { findUser } from '../database/finders';
-import { IQuestion, QuestionModel } from '../database/models/QuestionModel';
-import { IUser } from '../database/models/UserModel';
+import { IQuestion, QuestionModel } from '../models/QuestionModel';
+import UserModel, { IUser } from '../models/UserModel';
 import { QUESTION_NOT_FOUND } from '../utils/constants';
 
 @JsonController('/questions', { transformResponse: false })
@@ -45,7 +44,7 @@ export class QuestionController {
 
   @Get('/:author')
   private async getUserQuestions (@CurrentUser() user: HydratedDocument<IUser>, @Param('author') author: string): Promise<any> {
-    const authorDoc = await findUser(author);
+    const authorDoc = await UserModel.findUserByIdOrLogin(author); ;
 
     const questions = await QuestionModel
       .find({ author: authorDoc, anonim: false })
@@ -57,7 +56,7 @@ export class QuestionController {
 
   @Post()
   private async postQuestions (@CurrentUser() user: HydratedDocument<IUser>, @Body() { owner, anonim = true, text }: IQuestion): Promise<any> {
-    const ownerDoc = await findUser(owner);
+    const ownerDoc = await UserModel.findUserByIdOrLogin(owner);
 
     const question = new QuestionModel({ author: user.id, owner: ownerDoc.id, anonim, text });
     await question.save();

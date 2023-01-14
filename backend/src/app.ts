@@ -22,8 +22,6 @@ async function start (): Promise<void> {
   await mongoose.connect(MONGODB_URL);
   logger.info('Success connection with DB');
 
-  console.log(path.join(__dirname, '/controllers/**/*.ts'));
-
   const app = createExpressServer({
     cors: true,
     middlewares: [AuthErrorHandler, DefaultErrorHandler, HttpErrorHandler, LoggerMiddleware],
