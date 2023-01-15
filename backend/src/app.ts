@@ -9,11 +9,11 @@ import logger from './utils/logger';
 import { AuthErrorHandler } from './middlewares/AuthErrorHandler';
 import { DefaultErrorHandler } from './middlewares/DefaultErrorHandler';
 import { HttpErrorHandler } from './middlewares/HttpErrorHandler';
-import { LoggerMiddleware } from './middlewares/LoggerMidleware';
+import { LoggerMiddleware } from './middlewares/LoggerMiddleware';
 import { UsersController } from './controllers/UsersController';
 import { AuthController } from './controllers/AuthController';
 import { QuestionController } from './controllers/QuestionController';
-import { AnswersController } from './controllers/AnswersConstoller';
+import { AnswersController } from './controllers/AnswersController';
 
 logger.level = process.env.LOG_LEVEL ?? 'error';
 
