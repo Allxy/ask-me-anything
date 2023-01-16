@@ -2,12 +2,19 @@
 
 Social network where you can ask a friends about something intresting
 
-##Stack
+## Start script
+
+### `npm run dev`
+Runs the apps both in the development mode.\
+Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Stack
+
 front:
 - ChakraUI
 - axios
 - react
-- react-router v6 with DataAPI
+- react-router
+- redux
 
 back:
 - mongodb
