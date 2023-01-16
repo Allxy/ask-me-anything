@@ -81,7 +81,7 @@ export class AnswersController {
   @Post()
   private async postAnswerForQuestion (
     @CurrentUser() user: HydratedDocument<IUser>,
-      @Body() { answer, question }: IQuestion & { question: string }
+      @Body() { answer, question }: Pick<IQuestion, 'answer'> & { question: string }
   ): Promise<any> {
     const questionDoc = await QuestionModel.findById(question)
       .select('+owner')
@@ -92,7 +92,7 @@ export class AnswersController {
     } else if (questionDoc.answer !== undefined) {
       throw new BadRequestError('Question already have answer');
     } else if (questionDoc.owner?.toString() !== user.id) {
-      throw new BadRequestError('It is question not for you');
+      throw new BadRequestError('This question not for you');
     }
 
     let answerDoc;

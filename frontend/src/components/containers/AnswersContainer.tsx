@@ -1,70 +1,78 @@
 import { Spinner, Stack, Text } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { useFetcher } from 'react-router-dom';
+import { memo, useEffect, useState } from 'react';
+import AMAApi from '../../AMAApi';
+import { useAppSelector } from '../../hooks/storeHooks';
 import useOnScreen from '../../hooks/useOnScreen';
-import useUser from '../../hooks/useUser';
 import { IQuestion } from '../../models/Question';
+import { userSelector } from '../../store/slices/userSlice';
 import Answer from '../presentation/Answer';
 
 interface AnswersContainerProps {
-  answers?: IQuestion[]
   showOwner?: boolean
-  userId?: string
-  loader: string
+  currentUser?: string
 }
 
-const AnswersContainer: React.FC<AnswersContainerProps> = ({ answers: data = [], loader, showOwner = false }) => {
-  const likeFetcher = useFetcher();
-  const answersFetcher = useFetcher();
-  const { user } = useUser();
-  const [answers, setAnswers] = useState<IQuestion[]>(data);
+const AnswersContainer: React.FC<AnswersContainerProps> = ({ currentUser, showOwner = false }) => {
+  const user = useAppSelector(userSelector);
+  const [answers, setAnswers] = useState<IQuestion[]>([]);
   const [isOnScreen, markerRef] = useOnScreen<HTMLDivElement>('300px');
   const [page, setPage] = useState(1);
   const [isEnded, setIsEnded] = useState(false);
-
-  useEffect(() => {
-    if (likeFetcher.state === 'idle' && likeFetcher.data !== undefined) {
-      const newAnswers = answers.map((answer: IQuestion) =>
-        answer._id === likeFetcher.data._id ? likeFetcher.data : answer
-      );
-      setAnswers(newAnswers);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [likeFetcher]);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOnScreen && !isEnded) {
-      answersFetcher.load(`${loader}?page=${page}`);
-      setPage(page + 1);
+      AMAApi.getAnswers(currentUser).then((data)=> {
+        if(data.length < 10) {
+          setIsEnded(true);
+        }
+        setPage(page + 1);
+        setAnswers([...answers, ...data]);
+      }).finally(()=> setIsLoading(false));
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOnScreen]);
 
-  useEffect(() => {
-    if (answersFetcher.data !== undefined && answersFetcher.state === 'idle') {
-      if (answersFetcher.data.length < 10) {
-        setIsEnded(true);
-      }
-      setAnswers([...answers, ...answersFetcher.data]);
+  const toggleLike = (isLiked: boolean, id: string) => {
+    if(isLiked) {
+      setAnswers(answers.map((ans)=> {
+        if(ans._id === id) {
+          return {...ans, likes: ans.likes.filter((u)=> u._id !== user?._id)};
+        }
+        return ans;
+      }));
+      AMAApi.deleteAnswerDislike(id).catch((data)=> {
+        setAnswers((prev)=>prev.map((ans)=> {
+          if(ans._id === id && user !== null) {
+            return {...ans, likes: [...ans.likes, user]};
+          }
+          return ans;
+        }));
+      });
+    } else {
+      setAnswers(answers.map((ans)=> {
+        if(ans._id === id && user !== null) {
+          return {...ans, likes: [...ans.likes, user]};
+        }
+        return ans;
+      }));
+      AMAApi.putAnswerLike(id).then((data)=> {
+        setAnswers(answers.map((ans)=>{
+          if(ans._id === id) {
+            return data;
+          }
+          return ans;
+        }));
+      }).catch(()=> {
+        setAnswers(answers.map((ans)=> {
+          if(ans._id === id) {
+            return {...ans, likes: ans.likes.filter((u)=> u._id !== user?._id)};
+          }
+          return ans;
+        }));
+      });;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [answersFetcher]);
-
-  function toggleLike (isLiked: boolean, q: IQuestion): void {
-    likeFetcher.load(`/answer/${q._id}/${isLiked ? 'dislike' : 'like'}`);
-    let likes = [...q.likes];
-    if (user != null) {
-      if (isLiked) {
-        likes = likes.filter((el) => el._id === user._id);
-      } else {
-        likes = [...likes, user];
-      }
-    }
-    const newAnswers = answers.map((answer: IQuestion) =>
-      answer._id === q._id ? { ...answer, likes } : answer
-    );
-    setAnswers(newAnswers);
-  }
+  };
 
   return (
     <>
@@ -76,11 +84,11 @@ const AnswersContainer: React.FC<AnswersContainerProps> = ({ answers: data = [],
             question={q}
             isLiked={q.likes.some((u) => u?._id === user?._id)}
             showOwner={showOwner}
-            onLike={(isLiked) => toggleLike(isLiked, q)}
+            onLike={toggleLike}
           />)
         }
         { answers.length === 0 && <Text align='center'>There's nothing here</Text>}
-        { answersFetcher.state === 'loading' && <Spinner alignSelf='center'></Spinner>}
+        { isLoading && <Spinner alignSelf='center'></Spinner>}
         { isEnded && answers.length !== 0 && <Text py='4' align='center'>No more :)</Text> }
       </Stack>
       <div ref={markerRef}></div>
@@ -88,4 +96,4 @@ const AnswersContainer: React.FC<AnswersContainerProps> = ({ answers: data = [],
   );
 };
 
-export default AnswersContainer;
+export default memo(AnswersContainer);

@@ -6,7 +6,7 @@ const FeedPage: React.FC = (props) => {
     <Container maxW='container.md'>
       <Box as='section'>
         <Heading as='h1' size='xl' ml='4' mb='2'>Feed</Heading>
-        <AnswersContainer loader='/answers' showOwner/>
+        <AnswersContainer showOwner/>
       </Box>
     </Container>
   );

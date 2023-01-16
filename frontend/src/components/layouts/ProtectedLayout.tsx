@@ -1,9 +1,10 @@
+import { Box, useMediaQuery } from '@chakra-ui/react';
 import { memo } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
+import { useAppSelector } from '../../hooks/storeHooks';
 import { ERole } from '../../models/User';
-import useUser from '../../hooks/useUser';
+import { userSelector } from '../../store/slices/userSlice';
 import Header from '../Header';
-import { Box, useMediaQuery } from '@chakra-ui/react';
 import Toolbar from '../Toolbar';
 
 interface ProtectedLayoutProps {
@@ -11,7 +12,7 @@ interface ProtectedLayoutProps {
 }
 
 const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ roles }) => {
-  const { user } = useUser();
+  const user = useAppSelector(userSelector);
   const [isDesktop] = useMediaQuery('only screen and (min-device-width: 768px)');
 
   if (user === null) {
@@ -26,9 +27,8 @@ const ProtectedLayout: React.FC<ProtectedLayoutProps> = ({ roles }) => {
     <>
       {isDesktop ? <Header /> : <Toolbar />}
       <Box
-        mt={isDesktop ? '14' : '0'}
+        pt={isDesktop ? '20' : '4'}
         pb={isDesktop ? '0' : '20'}
-        pt='4'
       >
         <Outlet />
       </Box>

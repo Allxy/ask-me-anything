@@ -1,21 +1,29 @@
 import { Box, Button, Container, Heading, Link, Stack, Text, VStack } from '@chakra-ui/react';
-import { ReactNode } from 'react';
-import { Link as RouterLink, FetcherWithComponents } from 'react-router-dom';
+import { FormEventHandler, ReactNode, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
 import Logo from '../ui/Logo';
 
 interface AuthContainerProps {
   children: ReactNode
   title: string
-  className?: string
-  fetcher: FetcherWithComponents<any>
   buttonText: string
   isValid: boolean
-  action: string
   link: string
   linkTitle: string
+  onSubmit: () => Promise<void>
 }
 
-const AuthContainer: React.FC<AuthContainerProps> = ({ fetcher, ...props }) => {
+const AuthContainer: React.FC<AuthContainerProps> = (props) => {
+  const [error, setError] = useState('');
+
+  const handleSubmit : FormEventHandler<HTMLDivElement> = (e) => {
+    e.preventDefault();
+    props.onSubmit()
+      .catch(err => {
+        setError(err.message);
+      });
+  };
+
   return (
     <Container
       maxW='lg'
@@ -35,25 +43,24 @@ const AuthContainer: React.FC<AuthContainerProps> = ({ fetcher, ...props }) => {
         <Heading mb='2'>{props.title}</Heading>
         <Stack
           spacing={3}
-          as={fetcher.Form}
           maxW='96' width='100%'
-          noValidate action={props.action}
-          method='post'
+          as={"form"}
+          onSubmit={handleSubmit}
         >
           {props.children}
           <Text
             align='center'
             color='red.500'
             minH={8}
-            visibility={fetcher.data?.message !== undefined ? 'visible' : 'hidden'}
+            visibility={error !== undefined ? 'visible' : 'hidden'}
           >
-            {fetcher.data?.message}
+            {error}
           </Text>
           <Button
             colorScheme='facebook'
-            disabled={!props.isValid || fetcher.state !== 'idle'}
+            disabled={false}
             type='submit'
-            isLoading={fetcher.state !== 'idle'}
+            isLoading={false}
           >
             {props.buttonText}
           </Button>

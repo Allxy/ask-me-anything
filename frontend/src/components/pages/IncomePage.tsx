@@ -1,26 +1,25 @@
-import { Button, Container, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Stack, Text, Textarea, useColorModeValue, useDisclosure } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
-import { useFetcher, useLoaderData } from 'react-router-dom';
+import { Button, Container, Heading, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Spinner, Stack, Text, Textarea, useColorModeValue } from '@chakra-ui/react';
+import { FormEventHandler, useRef } from 'react';
+import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import { IQuestion } from '../../models/Question';
+import { fetchAnswer, selectQuestion } from '../../store/slices/incomeSlice';
 import Income from '../presentation/Income';
 
 const IncomePage: React.FC = () => {
-  const questions = useLoaderData() as IQuestion[];
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const [currentQuestion, setCurrentQuestion] = useState<IQuestion | null>(null);
-  const fetcher = useFetcher();
+  const {data: income, loading, isAnswerSending, selectedQuestion} = useAppSelector(state=> state.income);
+  const answerRef = useRef<HTMLTextAreaElement>(null);
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (fetcher.data?.answer !== undefined) {
-      onClose();
-    }
-  }, [fetcher, onClose]);
-
-  function handleQuestionClick (questionId: IQuestion): void {
-    onOpen();
-    setCurrentQuestion(questionId);
-    delete fetcher.data;
+  function handleQuestionClick (question: IQuestion | null): void {
+    dispatch(selectQuestion(question));
   }
+
+  const handleSubmit : FormEventHandler<HTMLDivElement> = (e) => {
+    e.preventDefault();
+    if(!isAnswerSending) { 
+      dispatch(fetchAnswer({answer: answerRef.current?.value ?? "", question: selectedQuestion?._id ?? ""}));
+    }
+  };
 
   return (
     <>
@@ -34,30 +33,30 @@ const IncomePage: React.FC = () => {
         >
           <Heading as='h1' size='md'>Income questions</Heading>
           {
-            questions.map((q: IQuestion) => (
-              <Income question={q} onClick={handleQuestionClick} />))
+            income.map((q: IQuestion) => (
+              <Income key={q._id} question={q} onClick={handleQuestionClick} />))
           }
-          {questions.length === 0 && <Text align='center'>You have no income questions.</Text>}
+          {loading && <Spinner alignSelf='center' />}
+          {!loading && income.length === 0 &&  <Text align='center'>You have no income questions.</Text>}
         </Stack>
       </Container>
 
-      <Modal onClose={onClose} isOpen={isOpen} isCentered >
+      <Modal onClose={()=>handleQuestionClick(null)} isOpen={!!selectedQuestion} isCentered useInert={false}>
         <ModalOverlay></ModalOverlay>
         <ModalContent>
           <ModalHeader>Answer</ModalHeader>
           <ModalCloseButton />
-          <ModalBody as='p'>{currentQuestion?.text}</ModalBody>
+          <ModalBody as='p'>{selectedQuestion?.text}</ModalBody>
           <ModalFooter
-            as={fetcher.Form}
-            action={`/income/${currentQuestion?._id ?? ''}`}
-            method='post'
+            as='form'
+            noValidate
+            onSubmit={handleSubmit}
           >
             <Stack width='100%'>
-              <Textarea name='answer' />
-              <Button type='submit'>Send</Button>
+              <Textarea name='answer' isRequired minLength={5} ref={answerRef} />
+              <Button type='submit' isLoading={loading} disabled={loading}>Send</Button>
             </Stack>
           </ModalFooter>
-          <Text color='red.400'>{fetcher.data?.message}</Text>
         </ModalContent>
       </Modal>
     </>);

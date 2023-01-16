@@ -1,13 +1,23 @@
-import { Link as RouterLink } from 'react-router-dom';
-import useUser from '../hooks/useUser';
-import { Avatar, Box, Button, Container, Flex, HStack, IconButton, Image, Link, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { ChevronDownIcon, ChevronUpIcon, EmailIcon, MoonIcon, SearchIcon, SunIcon } from '@chakra-ui/icons';
+import { Avatar, Box, Circle, Container, Flex, HStack, IconButton, Image, Link, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text, useColorMode, useColorModeValue } from '@chakra-ui/react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../hooks/storeHooks';
 import logo from '../images/logo.png';
 import logoDark from '../images/logo_dark.png';
-import { EmailIcon, ChevronDownIcon, ChevronUpIcon, MoonIcon, SunIcon, SearchIcon } from '@chakra-ui/icons';
+import { fetchIncome, incomeSelector } from '../store/slices/incomeSlice';
+import { signOut, userSelector } from '../store/slices/userSlice';
 
 function Header (): JSX.Element {
-  const { user } = useUser();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(userSelector);
+  const income = useAppSelector(incomeSelector);
   const { toggleColorMode, colorMode } = useColorMode();
+  const navigate = useNavigate();
+
+  const handleSignOut = (): void => {
+    dispatch(signOut());
+    navigate("/sign-in");
+  };
 
   return (
     <Box
@@ -42,7 +52,24 @@ function Header (): JSX.Element {
             spacing='4'
           >
             <IconButton aria-label='search' icon={<SearchIcon />} as={RouterLink} to='search' />
-            <IconButton aria-label='income' icon={<EmailIcon />} as={RouterLink} to='income' />
+            <IconButton 
+              aria-label='income' 
+              icon={<>
+                <EmailIcon />
+                <Circle 
+                  bottom='1' 
+                  right='1' 
+                  size='4' 
+                  fontSize='xs' 
+                  bgColor='red' 
+                  position='absolute' 
+                  children={income.length} 
+                />
+              </>}  
+              as={RouterLink} 
+              to='income' 
+              onClick={()=>dispatch(fetchIncome())}
+            />
             <Menu placement='bottom-end'>
               {({ isOpen }) => (
                 <>
@@ -59,7 +86,7 @@ function Header (): JSX.Element {
                     {colorMode === 'dark' ? <MoonIcon /> : <SunIcon />}
                   </MenuItem>
                   <MenuDivider />
-                  <MenuItem as={RouterLink} to='/sign-out'>
+                  <MenuItem onClick={handleSignOut}>
                     Sign Out
                   </MenuItem>
                 </MenuList>

@@ -1,11 +1,10 @@
-import { useEffect } from 'react';
-import { useFetcher } from 'react-router-dom';
-import { IUser } from '../../models/User';
-import AuthContainer from '../containers/AuthContainer';
-import useForm from '../../hooks/useForm';
-import useUser from '../../hooks/useUser';
+import { CheckIcon, CloseIcon, EmailIcon, LockIcon } from '@chakra-ui/icons';
 import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip } from '@chakra-ui/react';
-import { EmailIcon, LockIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { useNavigate } from 'react-router-dom';
+import { useAppDispatch } from '../../hooks/storeHooks';
+import useForm from '../../hooks/useForm';
+import { fetchSignin } from '../../store/slices/userSlice';
+import AuthContainer from '../containers/AuthContainer';
 
 const initialValues = {
   email: '',
@@ -13,27 +12,23 @@ const initialValues = {
 };
 
 const LoginPage: React.FC = () => {
-  const fetcher = useFetcher<IUser | null>();
-  const { setUser } = useUser();
   const { values, errors, isValid, onChange } = useForm(initialValues);
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  useEffect(() => {
-    if (fetcher.state === 'idle') {
-      if (fetcher.data?.login !== undefined) {
-        setUser(fetcher.data);
-      }
-    }
-  }, [fetcher, setUser]);
+  const handleSubmit = async (): Promise<void> => {
+    return dispatch(fetchSignin(values))
+      .then(()=>navigate("/"));
+  };
 
   return (
     <AuthContainer
       title='Sign In'
-      fetcher={fetcher}
-      action='/sign-in'
       buttonText='Sign In'
       isValid={isValid}
       link='/sign-up'
       linkTitle='You have no account? Sign Up!'
+      onSubmit={handleSubmit}
     >
       <Tooltip label={errors.email}>
         <InputGroup>

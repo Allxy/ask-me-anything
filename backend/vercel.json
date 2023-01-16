@@ -1,7 +1,0 @@
-{
-  "version": 2,
-  "name": "nodejs-mongodb",
-  "routes": [
-    { "src": "/(.*)", "dest": "/app.js" }
-  ]
-}

@@ -1,9 +1,10 @@
 import { Center, Heading, Text } from '@chakra-ui/react';
-import { useRouteError } from 'react-router-dom';
 
-const ErrorPage: React.FC = () => {
-  const error = useRouteError() as any;
+interface ErrorPageProps {
+  message: string
+}
 
+const ErrorPage: React.FC<ErrorPageProps> = ({ message }) => {
   return (
     <Center
       flexDirection='column'
@@ -15,7 +16,7 @@ const ErrorPage: React.FC = () => {
       <Heading>Oops!</Heading>
       <Text>Sorry, an unexpected error has occurred.</Text>
       <Text as='i'>
-        {error?.status} {error.name} {error.message ?? error.statusText}
+        {message}
       </Text>
     </Center>
   );

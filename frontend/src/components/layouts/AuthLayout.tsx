@@ -1,17 +1,16 @@
 import { memo } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
-import useUser from '../../hooks/useUser';
+import { useAppSelector } from '../../hooks/storeHooks';
+import { userSelector } from '../../store/slices/userSlice';
 
-function AuthLayout (): JSX.Element {
-  const { user } = useUser();
+const AuthLayout: React.FC = () => {
+  const user = useAppSelector(userSelector);
 
   if (user !== null) {
     return <Navigate to='/' />;
   }
 
-  return (<>
-  <Outlet />
-  </>);
-}
+  return <Outlet />;
+};
 
 export default memo(AuthLayout);

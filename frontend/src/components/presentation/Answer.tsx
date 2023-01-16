@@ -8,7 +8,7 @@ import { LikeIcon } from '../ui/icons/LikeIcon';
 interface QuestionProps {
   question: IQuestion
   isLiked: boolean
-  onLike: (isLiked: boolean) => void
+  onLike: (isLiked: boolean, id: string) => void
   onClick?: MouseEventHandler
   showOwner: boolean
 }
@@ -64,7 +64,7 @@ const Answer: React.FC<QuestionProps> = ({
       <Divider my='2'></Divider>
       <HStack justifyContent='space-between'>
         <Button rightIcon={ isLiked ? <LikeActiveIcon color='red' /> : <LikeIcon color='red' />} onClick={() => {
-          onLike(isLiked);
+          onLike(isLiked, question._id);
         }}>
           {question.likes.length}
         </Button>

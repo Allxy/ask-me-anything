@@ -9,13 +9,17 @@
     "@chakra-ui/theme": "^2.2.3",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@reduxjs/toolkit": "^1.9.1",
+    "@types/react-redux": "^7.1.25",
     "axios": "^1.2.1",
     "chakra-ui-bottom-navigation": "^2.0.1",
     "framer-motion": "^8.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-redux": "^8.0.5",
     "react-router-dom": "^6.6.1",
-    "react-scripts": "^5.0.1"
+    "react-scripts": "^5.0.1",
+    "redux": "^4.2.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",

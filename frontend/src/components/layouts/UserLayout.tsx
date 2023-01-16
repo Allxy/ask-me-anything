@@ -1,26 +1,24 @@
-import { Center, Spinner } from '@chakra-ui/react';
-import { memo, Suspense } from 'react';
-import { Await, Outlet } from 'react-router-dom';
-import { UserContextProvider } from '../../contexts/UserContext';
-import { useLoaderTypedData } from '../../hooks/useLoaderTypedData';
+import { Spinner } from '@chakra-ui/react';
+import { memo, useEffect } from 'react';
+import { Outlet } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
+import { fetchIncome } from '../../store/slices/incomeSlice';
+import { fetchUser } from '../../store/slices/userSlice';
 
 const UserLayout: React.FC = () => {
-  const { userPromise } = useLoaderTypedData();
+  const { loading } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
 
-  return (
-    <Suspense fallback={<Center minH='100vh'><Spinner /></Center>}>
-      <Await
-        resolve={userPromise}
-        children={(user) => {
-          return (
-          <UserContextProvider value={ user }>
-            <Outlet />
-          </UserContextProvider>
-          );
-        }}
-      />
-    </Suspense>
-  );
+  useEffect(() => {
+    dispatch(fetchUser());
+    dispatch(fetchIncome());
+  }, [dispatch]);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  return <Outlet />;
 };
 
 export default memo(UserLayout);

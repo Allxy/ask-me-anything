@@ -1,33 +1,45 @@
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
 import { URLSearchParams } from 'url';
 import { IQuestion } from './models/Question';
 import { IUser } from './models/User';
 
+type Methods = "POST" | "PUT" | "GET" | "DELETE";
 export class AMAApi {
-  private readonly axios: AxiosInstance;
   private readonly tokenKey: string;
+  private token: string | null;
+  private baseURL: string;
 
   constructor (baseURL: string, tokenKey: string) {
-    this.axios = axios.create({
-      baseURL
-    });
     this.tokenKey = tokenKey;
-
-    const token = localStorage.getItem(tokenKey);
-    if (token !== null) this.axios.defaults.headers.authorization = 'Bearer ' + token;
+    this.baseURL = baseURL;
+    this.token = localStorage.getItem(tokenKey);
   }
 
-  public getToken (): string | undefined {
-    return this.axios.defaults.headers.authorization?.toString();
+  private async _fetch<T = any> (url :  RequestInfo | URL, method: Methods = "GET", body?: Object | string) : Promise<T> {
+    const jsonBody = typeof body === "object" ? JSON.stringify(body) : body;
+    const response = await fetch(this.baseURL + url, {
+      body: jsonBody,
+      method,
+      headers: {
+        "content-type": "application/json",
+        authorization: this.token ? "Bearer " + this.token : ""
+      }
+    });
+    const json = await response.json();
+    if (response.ok) return json;
+    throw new Error(json.message);
+  }
+
+  public getToken (): string | null {
+    return this.token;
   }
 
   public setToken (token: string): void {
-    this.axios.defaults.headers.authorization = 'Bearer ' + token;
+    this.token = token;
     localStorage.setItem(this.tokenKey, token);
   }
 
   public removeToken (): void {
-    delete this.axios.defaults.headers.authorization;
+    this.token = null;
     localStorage.removeItem(this.tokenKey);
   }
 
@@ -36,49 +48,53 @@ export class AMAApi {
     return Object.fromEntries(data);
   }
 
-  public async signIn (data: any): Promise<AxiosResponse<{ token: string }>> {
-    return await this.axios.post('/signin', data);
+  public async signIn (data: any): Promise<void> {
+    return await this._fetch('/signin', "POST",  data)
+      .then((res)=> {
+        this.setToken(res.token);
+      });
   }
 
-  public async signUp (data: any): Promise<AxiosResponse<IUser>> {
-    return await this.axios.post('/signup', data);
+  public async signUp (data: any): Promise<IUser> {
+    return await this._fetch('/signup', "POST", data);
   }
 
-  public async getUserMe (): Promise<AxiosResponse<IUser>> {
-    return await this.axios.get('/users/me');
+  public async getUserMe (): Promise<IUser> {
+    return await this._fetch('/users/me');
   }
 
-  public async getUsers (params: URLSearchParams): Promise<AxiosResponse<IUser[]>> {
-    return await this.axios.get('/users', { params });
+  public async getUsers (params: URLSearchParams): Promise<IUser[]> {
+    return await this._fetch(`/users?${params.toString()}`);
   }
 
-  public async getUser (user: string): Promise<AxiosResponse<IUser>> {
-    return await this.axios.get(`/users/${user}`);
+  public async getUser (user: string): Promise<IUser> {
+    return await this._fetch(`/users/${user}`);
   }
 
-  public async postQuestion (data: any): Promise<AxiosResponse<IQuestion>> {
-    return await this.axios.post('/questions', data);
+  public async postQuestion (data: any): Promise<IQuestion> {
+    return await this._fetch('/questions', "POST", data);
   }
 
-  public async getQuestions (): Promise<AxiosResponse<IQuestion[]>> {
-    return await this.axios.get('/questions/me');
+  public async getQuestions (): Promise<IQuestion[]> {
+    return await this._fetch('/questions/me');
   }
 
-  public async getAnswers (user?: string, params?: URLSearchParams): Promise<AxiosResponse<IQuestion[]>> {
-    return await this.axios.get('/answers' + (user !== undefined ? `/${user}` : ''), { params });
+  public async getAnswers (user?: string, params?: URLSearchParams): Promise<IQuestion[]> {
+    return await this._fetch('/answers' + (user !== undefined ? `/${user}?` : '?') + (params?.toString() ?? ""));
   }
 
-  public async postAnswer (data: any): Promise<AxiosResponse<IQuestion>> {
-    return await this.axios.post('/answers', data);
+  public async postAnswer (data: any): Promise<IQuestion> {
+    return await this._fetch('/answers', "POST", data);
   }
 
-  public async putAnswerLike (id: string): Promise<AxiosResponse<IQuestion>> {
-    return await this.axios.put(`/answers/${id}/like`);
+  public async putAnswerLike (id: string): Promise<IQuestion> {
+    return await this._fetch(`/answers/${id}/like`, "PUT");
   }
 
-  public async deleteAnswerDislike (id: string): Promise<AxiosResponse<IQuestion>> {
-    return await this.axios.delete(`/answers/${id}/like`);
+  public async deleteAnswerDislike (id: string): Promise<IQuestion> {
+    return await this._fetch(`/answers/${id}/like`, "DELETE");
   }
 }
 
-export default new AMAApi(process.env.REACT_APP_API_BASEURL ?? '', 'token');
+export default new AMAApi(process.env.REACT_APP_API_BASEURL ?? "dsad", 'token');
+// process.env.REACT_APP_API_BASEURL

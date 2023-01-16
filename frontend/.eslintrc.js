@@ -3,7 +3,6 @@ module.exports = {
     es2021: true
   },
   extends: [
-    'standard-with-typescript',
     'react-app',
     'react-app/jest'
   ],

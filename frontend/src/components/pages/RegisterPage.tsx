@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
-import { useFetcher, useNavigate } from 'react-router-dom';
-import { IUser } from '../../models/User';
-import AuthContainer from '../containers/AuthContainer';
-import useForm from '../../hooks/useForm';
-import { EmailIcon, InfoIcon, LockIcon, CheckIcon, CloseIcon } from '@chakra-ui/icons';
+import { CheckIcon, CloseIcon, EmailIcon, InfoIcon, LockIcon } from '@chakra-ui/icons';
 import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip } from '@chakra-ui/react';
+import { useNavigate } from 'react-router-dom';
+import AMAApi from '../../AMAApi';
+import useForm from '../../hooks/useForm';
+import AuthContainer from '../containers/AuthContainer';
 
 const initialValues = {
   email: '',
@@ -15,25 +14,24 @@ const initialValues = {
 };
 
 const RegisterPage: React.FC = () => {
-  const fetcher = useFetcher<IUser | null>();
   const { values, errors, onChange, isValid } = useForm(initialValues);
-  const natigate = useNavigate();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (fetcher.data?.login !== undefined) {
-      natigate('/sign-in');
-    }
-  }, [fetcher]);
+  const handleSubmit = async (): Promise<void> => {
+    return await AMAApi.signUp(values)
+      .then((response) => {
+        navigate('/sign-in');
+      });
+  };
 
   return (
     <AuthContainer
       title='Sign Up'
-      action='/sign-up'
-      fetcher={fetcher}
       buttonText='Sign Up'
       isValid={isValid && values.confirm === values.password}
       link='/sign-in'
       linkTitle='Already have account? Sign In!'
+      onSubmit={handleSubmit}
     >
       <Tooltip label={errors.email}>
         <InputGroup>

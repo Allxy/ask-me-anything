@@ -1,22 +1,45 @@
-import { Avatar, Box, Button, Container, Flex, FormControl, Heading, HStack, Stack, Switch, Text, Textarea, Tooltip } from '@chakra-ui/react';
-import { useEffect } from 'react';
-import { useFetcher, useLoaderData } from 'react-router-dom';
+import { Avatar, Box, Button, Container, Flex, Heading, HStack, Spinner, Stack, Switch, Text, Textarea, Tooltip, useToast } from '@chakra-ui/react';
+import { FormEventHandler, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import AMAApi from '../../AMAApi';
+import { useAppSelector } from '../../hooks/storeHooks';
 import useForm from '../../hooks/useForm';
-import useUser from '../../hooks/useUser';
 import { IUser } from '../../models/User';
+import { userSelector } from '../../store/slices/userSlice';
 import AnswersContainer from '../containers/AnswersContainer';
 
 const ProfilePage: React.FC = () => {
-  const { user } = useUser();
-  const currentUser = useLoaderData() as IUser;
-  const askFetcher = useFetcher();
+  const user = useAppSelector(userSelector);
+  const params = useParams();
+  const [currentUser, setCurrentUser] = useState<IUser | null>(null); 
   const { values, onChange, resetForm, errors, isValid } = useForm({ text: '' });
+  const [isAnon, setIsAnon] =  useState(false);
+  const toast = useToast();
 
   useEffect(() => {
-    if (askFetcher.state === 'idle' && askFetcher.data?.message === undefined) {
+    AMAApi.getUser(params.userID ?? "").then((user)=>{
+      setCurrentUser(user);
+    });
+  }, []);
+
+  const handleSubmit : FormEventHandler<HTMLDivElement> = (e) => {
+    e.preventDefault();
+    AMAApi.postQuestion({...values, anonim: isAnon, owner: params.userID})
+    .then(()=> {
+      toast({
+        title: 'Success.',
+          description: "Question have been sended.",
+          status: 'success',
+          duration: 1000,
+          isClosable: true,
+      });
       resetForm();
-    }
-  }, [askFetcher, resetForm]);
+    });
+  };
+
+  if(currentUser === null) {
+    return <Spinner />;
+  }
 
   return (
     <Container maxW='container.md'>
@@ -39,7 +62,7 @@ const ProfilePage: React.FC = () => {
         <Heading as='h2' size='md' mb='4'>
           Ask {currentUser.login === user?.login ? 'yourself' : currentUser.login} about something interesting
         </Heading>
-        <FormControl as={askFetcher.Form} action='ask' method='post'>
+        <Stack as={'form'} onSubmit={handleSubmit}>
           <Tooltip label={errors.text}>
             <Textarea
               value={values.text}
@@ -53,16 +76,16 @@ const ProfilePage: React.FC = () => {
             />
           </Tooltip>
           <Flex alignItems='center'>
-            <Switch name='anonim' type='checkbox' value='on'>
+            <Switch name='anonim' type='checkbox' onChange={(e)=>setIsAnon(e.target.checked)}>
               Ask anonymously
             </Switch>
             <Button ml='auto' type='submit' disabled={!isValid}>Send</Button>
           </Flex>
-        </FormControl>
+        </Stack>
       </Box>
       <Box as='section'>
         <Heading as='h2' size='md' ml='4' mb='2'>Answers</Heading>
-        <AnswersContainer loader={`/user/${currentUser.login}/answers`} />
+        <AnswersContainer currentUser={currentUser.login} />
       </Box>
     </Stack>
     </Container>

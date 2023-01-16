@@ -70,8 +70,6 @@ userSchema.static('findUserByIdOrLogin', async function (findValue: RefType) {
   if (findUser === null) {
     throw new BadRequestError('User not found');
   }
-  console.log(findUser);
-
   return findUser;
 });
 

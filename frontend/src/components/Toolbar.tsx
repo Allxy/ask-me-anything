@@ -2,10 +2,11 @@ import { AtSignIcon, EmailIcon, SearchIcon, TimeIcon } from '@chakra-ui/icons';
 import { Box, Container, Flex } from '@chakra-ui/react';
 import { BottomNavigation, BottomNavigationIcon, BottomNavigationItem, BottomNavigationLabel } from 'chakra-ui-bottom-navigation';
 import { useLocation, useNavigate } from 'react-router-dom';
-import useUser from '../hooks/useUser';
+import { useAppSelector } from '../hooks/storeHooks';
+import { userSelector } from '../store/slices/userSlice';
 
 function Toolbar (): JSX.Element {
-  const { user } = useUser();
+  const user = useAppSelector(userSelector);
   const navigate = useNavigate();
   const location = useLocation();
 
