@@ -1,4 +1,4 @@
-import { Spinner } from '@chakra-ui/react';
+import { Center, Spinner } from '@chakra-ui/react';
 import { memo, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
@@ -15,7 +15,9 @@ const UserLayout: React.FC = () => {
   }, [dispatch]);
 
   if (loading) {
-    return <Spinner />;
+    return <Center h='100vh'>
+        <Spinner alignSelf='center' />
+      </Center>;
   }
 
   return <Outlet />;

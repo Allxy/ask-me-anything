@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, Container, Flex, Heading, HStack, Spinner, Stack, Switch, Text, Textarea, Tooltip, useToast } from '@chakra-ui/react';
+import { Avatar, Box, Button, Center, Container, Flex, Heading, HStack, Spinner, Stack, Switch, Text, Textarea, Tooltip, useToast } from '@chakra-ui/react';
 import { FormEventHandler, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AMAApi from '../../AMAApi';
@@ -38,7 +38,9 @@ const ProfilePage: React.FC = () => {
   };
 
   if(currentUser === null) {
-    return <Spinner />;
+    return <Center>
+        <Spinner />
+      </Center>;
   }
 
   return (

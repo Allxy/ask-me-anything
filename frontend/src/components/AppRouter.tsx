@@ -36,20 +36,6 @@ const AppRouter: React.FC = () => {
               path='/' 
               element={<FeedPage />} 
             />
-            {
-            //   <Route path='answer/:answerId'> </Route>
-            // 
-            //   <Route path='answers' />
-            // </Route>
-            // 
-            //   <Route path='answers'/>
-            //   <Route path='ask'/>
-            // </Route>
-            //   <Route
-            //     path=':questionId'
-            //   />
-            // </Route>
-            }
           </Route>
         </Route>
       </Routes>

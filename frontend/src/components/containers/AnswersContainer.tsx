@@ -22,6 +22,7 @@ const AnswersContainer: React.FC<AnswersContainerProps> = ({ currentUser, showOw
 
   useEffect(() => {
     if (isOnScreen && !isEnded) {
+      setIsLoading(true);
       AMAApi.getAnswers(currentUser).then((data)=> {
         if(data.length < 10) {
           setIsEnded(true);
@@ -87,7 +88,7 @@ const AnswersContainer: React.FC<AnswersContainerProps> = ({ currentUser, showOw
             onLike={toggleLike}
           />)
         }
-        { answers.length === 0 && <Text align='center'>There's nothing here</Text>}
+        { !isLoading && answers.length === 0 && <Text align='center'>There's nothing here</Text>}
         { isLoading && <Spinner alignSelf='center'></Spinner>}
         { isEnded && answers.length !== 0 && <Text py='4' align='center'>No more :)</Text> }
       </Stack>

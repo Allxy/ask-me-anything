@@ -8,17 +8,21 @@ import { IUser } from '../../models/User';
 
 const SearchPage: React.FC = () => {
   const [searchValue, setSearchValue] = useState('');
-  const [debouncedValue, isPending] = useDebounce(searchValue, 300);
+  const [debouncedValue] = useDebounce(searchValue, 300);
   const [users, setUsers] = useState<IUser[]>([]);
   const [searchParams, setSearchParams] = useSearchParams();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setSearchParams({login: debouncedValue});
   }, [debouncedValue, setSearchParams]);
 
   useEffect(()=> {
+    setIsLoading(true);
     AMAApi.getUsers(searchParams).then((data)=> {
       setUsers(data);
+    }).finally(()=>{
+      setIsLoading(false);
     });
   }, [searchParams]);
 
@@ -34,8 +38,8 @@ const SearchPage: React.FC = () => {
     </InputGroup>
     <Stack px='8' py='4' mt='4' rounded='lg' bgColor='white' _dark={{ bgColor: 'gray.800' }}>
       {users.map((user) => <Text fontWeight='bold' key={user._id} to={`/user/${user.login}`} as={RouterLink}>{user.login}</Text>)}
-      {users.length === 0 && !isPending && <Text align='center'>No results</Text>}
-      {isPending && <Spinner alignSelf='center' />}
+      {users.length === 0 && !isLoading && <Text align='center'>No results</Text>}
+      {isLoading && <Spinner alignSelf='center' />}
     </Stack>
   </Container>
   );
