@@ -1,7 +1,9 @@
 import { CheckIcon, CloseIcon, EmailIcon, LockIcon } from '@chakra-ui/icons';
-import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip } from '@chakra-ui/react';
+import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip, useToast } from '@chakra-ui/react';
+import { stat } from 'fs';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAppDispatch } from '../../hooks/storeHooks';
+import { useAppDispatch, useAppSelector } from '../../hooks/storeHooks';
 import useForm from '../../hooks/useForm';
 import { fetchSignin } from '../../store/slices/userSlice';
 import AuthContainer from '../containers/AuthContainer';
@@ -13,12 +15,24 @@ const initialValues = {
 
 const LoginPage: React.FC = () => {
   const { values, errors, isValid, onChange } = useForm(initialValues);
-  const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const error = useAppSelector(state=> state.user.error);
+  const toast = useToast();
+
+  useEffect(()=> {
+    if(error) {
+      toast({
+        title: 'Error.',
+          description: error,
+          status: 'error',
+          duration: 3000,
+          isClosable: true,
+      });
+    }
+  }, [error]);
 
   const handleSubmit = async (): Promise<void> => {
-    return dispatch(fetchSignin(values))
-      .then(()=>navigate("/"));
+    dispatch(fetchSignin(values));
   };
 
   return (

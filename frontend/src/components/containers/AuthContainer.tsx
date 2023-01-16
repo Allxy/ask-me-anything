@@ -1,5 +1,5 @@
 import { Box, Button, Container, Heading, Link, Stack, Text, VStack } from '@chakra-ui/react';
-import { FormEventHandler, ReactNode, useState } from 'react';
+import { FormEventHandler, ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Logo from '../ui/Logo';
 
@@ -14,14 +14,10 @@ interface AuthContainerProps {
 }
 
 const AuthContainer: React.FC<AuthContainerProps> = (props) => {
-  const [error, setError] = useState('');
 
   const handleSubmit : FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-    props.onSubmit()
-      .catch(err => {
-        setError(err.message);
-      });
+    props.onSubmit();
   };
 
   return (
@@ -48,14 +44,6 @@ const AuthContainer: React.FC<AuthContainerProps> = (props) => {
           onSubmit={handleSubmit}
         >
           {props.children}
-          <Text
-            align='center'
-            color='red.500'
-            minH={8}
-            visibility={error !== undefined ? 'visible' : 'hidden'}
-          >
-            {error}
-          </Text>
           <Button
             colorScheme='facebook'
             disabled={false}

@@ -6,12 +6,14 @@ import { fetchIncome } from './incomeSlice';
 
 interface UserState {
   loading: boolean
+  error: string
   data: IUser | null
 }
 
 const initialState: UserState = {
   loading: true,
   data: null,
+  error: "",
 };
 
 export const fetchUser = createAsyncThunk('fetchUser', async () => {
@@ -26,7 +28,7 @@ export const fetchSignin = createAsyncThunk('fetchSignin',
   async (values : {email: string, password: string}, { dispatch }) => {
     await AMAApi.signIn(values);
     dispatch(fetchIncome());
-    return dispatch(fetchUser());
+    dispatch(fetchUser());
   }
 );
 
@@ -44,7 +46,7 @@ export const userSlice = createSlice({
 
   },
   extraReducers: (builder) => {
-    builder.addCase(fetchUser.rejected, (state, action) => {
+    builder.addCase(fetchUser.rejected, (state) => {
       AMAApi.removeToken();
       state.loading = false;
     });
@@ -54,6 +56,15 @@ export const userSlice = createSlice({
     });
     builder.addCase(fetchUser.pending, (state, action) => {
       state.loading = true;
+    });
+    builder.addCase(fetchSignin.pending, (state, action: any) => {
+      state.error = "";
+    });
+    builder.addCase(fetchSignin.fulfilled, (state, action: any) => {
+      state.error = "";
+    });
+    builder.addCase(fetchSignin.rejected, (state, action: any) => {
+      state.error = action.error.message;
     });
   }
 });

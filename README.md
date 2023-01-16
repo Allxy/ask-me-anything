@@ -1,6 +1,6 @@
 # ask-me-anything
 
-Social network where you can ask a friends about something intresting
+Social network where you can ask a friends about something interesting
 
 ## Start script
 

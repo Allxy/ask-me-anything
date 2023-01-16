@@ -1,5 +1,5 @@
 import { CheckIcon, CloseIcon, EmailIcon, InfoIcon, LockIcon } from '@chakra-ui/icons';
-import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip } from '@chakra-ui/react';
+import { Input, InputGroup, InputLeftElement, InputRightElement, Tooltip, useToast } from '@chakra-ui/react';
 import { useNavigate } from 'react-router-dom';
 import AMAApi from '../../AMAApi';
 import useForm from '../../hooks/useForm';
@@ -16,11 +16,27 @@ const initialValues = {
 const RegisterPage: React.FC = () => {
   const { values, errors, onChange, isValid } = useForm(initialValues);
   const navigate = useNavigate();
+  const toast = useToast();
 
   const handleSubmit = async (): Promise<void> => {
     return await AMAApi.signUp(values)
-      .then((response) => {
+      .then(() => {
         navigate('/sign-in');
+        toast({
+          title: 'Success.',
+            description: "Account have been registered.",
+            status: 'success',
+            duration: 3000,
+            isClosable: true,
+        });
+      }).catch((error)=> {
+        toast({
+          title: 'Error.',
+            description: error.message,
+            status: 'error',
+            duration: 3000,
+            isClosable: true,
+        });
       });
   };
 
