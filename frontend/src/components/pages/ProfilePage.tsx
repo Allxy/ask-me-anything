@@ -20,7 +20,7 @@ const ProfilePage: React.FC = () => {
     AMAApi.getUser(params.userID ?? "").then((user)=>{
       setCurrentUser(user);
     });
-  }, []);
+  }, [params]);
 
   const handleSubmit : FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
@@ -87,7 +87,7 @@ const ProfilePage: React.FC = () => {
       </Box>
       <Box as='section'>
         <Heading as='h2' size='md' ml='4' mb='2'>Answers</Heading>
-        <AnswersContainer currentUser={currentUser.login} />
+        <AnswersContainer key={currentUser.login} currentUser={currentUser.login} />
       </Box>
     </Stack>
     </Container>
