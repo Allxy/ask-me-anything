@@ -5,27 +5,28 @@ import { RootState } from '../store';
 import { fetchIncome } from './incomeSlice';
 
 interface UserState {
-  loading: boolean
-  error: string
-  data: IUser | null
+  loading: boolean;
+  error: string;
+  data: IUser | null;
 }
 
 const initialState: UserState = {
   loading: true,
   data: null,
-  error: "",
+  error: '',
 };
 
 export const fetchUser = createAsyncThunk('fetchUser', async () => {
-  if(AMAApi.getToken() !== null) {
+  if (AMAApi.getToken() !== null) {
     return await AMAApi.getUserMe();
   } else {
     return null;
   }
 });
 
-export const fetchSignin = createAsyncThunk('fetchSignin', 
-  async (values : {email: string, password: string}, { dispatch }) => {
+export const fetchSignin = createAsyncThunk(
+  'fetchSignin',
+  async (values: { email: string; password: string }, { dispatch }) => {
     await AMAApi.signIn(values);
     dispatch(fetchIncome());
     dispatch(fetchUser());
@@ -42,8 +43,7 @@ export const userSlice = createSlice({
     signOut: (state) => {
       state.data = null;
       AMAApi.removeToken();
-    }
-
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(fetchUser.rejected, (state) => {
@@ -54,19 +54,19 @@ export const userSlice = createSlice({
       state.data = action.payload;
       state.loading = false;
     });
-    builder.addCase(fetchUser.pending, (state, action) => {
+    builder.addCase(fetchUser.pending, (state, action : any) => {
       state.loading = true;
     });
-    builder.addCase(fetchSignin.pending, (state, action: any) => {
-      state.error = "";
+    builder.addCase(fetchSignin.pending, (state) => {
+      state.error = '';
     });
-    builder.addCase(fetchSignin.fulfilled, (state, action: any) => {
-      state.error = "";
+    builder.addCase(fetchSignin.fulfilled, (state) => {
+      state.error = '';
     });
     builder.addCase(fetchSignin.rejected, (state, action: any) => {
       state.error = action.error.message;
     });
-  }
+  },
 });
 
 export const { setUser, signOut } = userSlice.actions;

@@ -7,8 +7,9 @@ import {
   Stack,
   VStack,
 } from '@chakra-ui/react';
-import { FormEventHandler, ReactNode, useState } from 'react';
+import { FormEventHandler, ReactNode, useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useAppSelector } from '../../hooks/storeHooks';
 import Logo from '../ui/Logo';
 
 interface AuthContainerProps {
@@ -23,12 +24,17 @@ interface AuthContainerProps {
 
 const AuthContainer: React.FC<AuthContainerProps> = (props) => {
   const [isLoading, setIsLoading] = useState(false);
+  const error = useAppSelector((state) => state.user.error);
 
   const handleSubmit: FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    props.onSubmit().finally(() => setIsLoading(false));
+    props.onSubmit();
   };
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [error]);
 
   return (
     <Container
