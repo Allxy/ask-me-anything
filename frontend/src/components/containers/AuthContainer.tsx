@@ -1,23 +1,33 @@
-import { Box, Button, Container, Heading, Link, Stack, Text, VStack } from '@chakra-ui/react';
-import { FormEventHandler, ReactNode } from 'react';
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Link,
+  Stack,
+  VStack,
+} from '@chakra-ui/react';
+import { FormEventHandler, ReactNode, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import Logo from '../ui/Logo';
 
 interface AuthContainerProps {
-  children: ReactNode
-  title: string
-  buttonText: string
-  isValid: boolean
-  link: string
-  linkTitle: string
-  onSubmit: () => Promise<void>
+  children: ReactNode;
+  title: string;
+  buttonText: string;
+  isValid: boolean;
+  link: string;
+  linkTitle: string;
+  onSubmit: () => Promise<void>;
 }
 
 const AuthContainer: React.FC<AuthContainerProps> = (props) => {
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit : FormEventHandler<HTMLDivElement> = (e) => {
+  const handleSubmit: FormEventHandler<HTMLDivElement> = (e) => {
     e.preventDefault();
-    props.onSubmit();
+    setIsLoading(true);
+    props.onSubmit().finally(() => setIsLoading(false));
   };
 
   return (
@@ -26,7 +36,7 @@ const AuthContainer: React.FC<AuthContainerProps> = (props) => {
       py={{ base: '12', md: '24' }}
       px={{ base: '0', sm: '8' }}
     >
-      <VStack mb='8' >
+      <VStack mb='8'>
         <Box as={Logo} size={32} link='/sign-in' />
       </VStack>
       <VStack
@@ -39,8 +49,9 @@ const AuthContainer: React.FC<AuthContainerProps> = (props) => {
         <Heading mb='2'>{props.title}</Heading>
         <Stack
           spacing={3}
-          maxW='96' width='100%'
-          as={"form"}
+          maxW='96'
+          width='100%'
+          as={'form'}
           onSubmit={handleSubmit}
         >
           {props.children}
@@ -48,12 +59,14 @@ const AuthContainer: React.FC<AuthContainerProps> = (props) => {
             colorScheme='facebook'
             disabled={false}
             type='submit'
-            isLoading={false}
+            isLoading={isLoading}
           >
             {props.buttonText}
           </Button>
         </Stack>
-        <Link as={RouterLink} to={props.link}>{props.linkTitle}</Link>
+        <Link as={RouterLink} to={props.link}>
+          {props.linkTitle}
+        </Link>
       </VStack>
     </Container>
   );
