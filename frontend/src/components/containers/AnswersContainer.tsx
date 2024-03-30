@@ -24,7 +24,7 @@ const AnswersContainer: React.FC<AnswersContainerProps> = ({ currentUser, showOw
     if (isOnScreen && !isEnded) {
       setIsLoading(true);
       const params = new URLSearchParams();
-      params.append("page", page);
+      params.append("page", page.toString());
       AMAApi.getAnswers(currentUser, params).then((data)=> {
         if(data.length < 10) {
           setIsEnded(true);
