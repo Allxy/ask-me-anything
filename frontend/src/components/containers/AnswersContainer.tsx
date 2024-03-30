@@ -1,6 +1,5 @@
 import { Spinner, Stack, Text } from '@chakra-ui/react';
 import { memo, useEffect, useState } from 'react';
-import { URLSearchParams } from 'url';
 import AMAApi from '../../AMAApi';
 import { useAppSelector } from '../../hooks/storeHooks';
 import useOnScreen from '../../hooks/useOnScreen';
