@@ -1,5 +1,6 @@
 import { Spinner, Stack, Text } from '@chakra-ui/react';
 import { memo, useEffect, useState } from 'react';
+import { URLSearchParams } from 'url';
 import AMAApi from '../../AMAApi';
 import { useAppSelector } from '../../hooks/storeHooks';
 import useOnScreen from '../../hooks/useOnScreen';
@@ -23,7 +24,9 @@ const AnswersContainer: React.FC<AnswersContainerProps> = ({ currentUser, showOw
   useEffect(() => {
     if (isOnScreen && !isEnded) {
       setIsLoading(true);
-      AMAApi.getAnswers(currentUser).then((data)=> {
+      const params = new URLSearchParams();
+      params.append("page", page);
+      AMAApi.getAnswers(currentUser, params).then((data)=> {
         if(data.length < 10) {
           setIsEnded(true);
         }
